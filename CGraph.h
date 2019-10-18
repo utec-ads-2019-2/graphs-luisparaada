@@ -5,12 +5,13 @@
 #ifndef GRAPHS_LUISPARAADA_CGRAPH_H
 #define GRAPHS_LUISPARAADA_CGRAPH_H
 
+#include <vector>
 #include "ENode.h"
 
 class Graph
 {
     // Function to allocate new node of Adjacency List
-    Node* getAdjListNode(int value, int weight, Node* head)
+    Node* getAdjListNode(int value, double weight, Node* head)
     {
         Node* newNode = new Node;
         newNode->val = value;
@@ -21,11 +22,10 @@ class Graph
 
         return newNode;
     }
-
     int N;  // number of nodes in the graph
 
-public:
 
+public:
     // An array of pointers to Node to represent
     // adjacency list
     Node **head;
@@ -56,6 +56,33 @@ public:
 
         }
     }
+
+
+    Graph(std::vector<Edge*> ptrVec, int N)
+    {
+        // allocate memory
+        head = new Node*[N]();
+        this->N = N;
+
+        // initialize head pointer for all vertices
+        for (int i = 0; i < N; ++i)
+            head[i] = nullptr;
+
+        // add edges to the directed graph
+        for (auto &elem :ptrVec) {
+            int src = elem->src;
+            int dest = elem->dest;
+            double weight = elem->weight;
+
+            // insert in the beginning
+            Node* newNode = getAdjListNode(dest, weight, head[src]);
+
+            // point head pointer to new node
+            head[src] = newNode;
+        }
+    }
+
+
 
     // Destructor
     ~Graph() {

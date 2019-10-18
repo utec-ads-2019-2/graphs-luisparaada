@@ -5,15 +5,26 @@
 #ifndef GRAPHS_LUISPARAADA_ENODE_H
 #define GRAPHS_LUISPARAADA_ENODE_H
 
+
 // Data structure to store Adjacency list nodes
 struct Node {
-    int val, cost;
+    int val;
+    double cost;
     Node* next;
 };
 
 // Data structure to store graph edges
 struct Edge {
-    int src, dest, weight;
+    int src, dest;
+    double weight;
+
+    Edge(std::string src, std::string dest){
+        this->src = std::stoi(src);
+        this->dest = std::stoi(dest);
+    }
+
+    Edge(int src, int dest) : src(src), dest(dest) {}
+    Edge(int src, int dest, int weight) : src(src), dest(dest), weight(weight) {}
 };
 
 #endif //GRAPHS_LUISPARAADA_ENODE_H
