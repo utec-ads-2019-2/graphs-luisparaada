@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "ENode.h"
+#include <map>
 
 class Graph
 {
@@ -28,6 +29,7 @@ class Graph
 public:
     // An array of pointers to Node to represent
     // adjacency list
+    //std::map<int, Node**>AdjacencyList; ???
     Node **head;
 
     // Constructor
