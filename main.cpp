@@ -23,16 +23,19 @@ int main()
     CJASON airport("JSON/airports.json");
     //airport.print();
 
+    airport.print();
     //airport.printIDandDestination();
     Graph graph(airport.generateEdges(), airport.getNumberAirports());
 
 
     // print adjacency list representation of graph
-
-    for (int i = 0; i < airport.getNumberAirports(); i++)
+    int contador=0;
+    for (auto it=graph.AdjacencyList.begin(); it != graph.AdjacencyList.end(); it++)
     {
+        cout<<"HOLA"<<endl;
         // print all neighboring vertices of vertex i
-        printList(graph.head[i], i);
+        printList(it->second, contador);
+        contador++;
     }
 
 

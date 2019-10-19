@@ -29,19 +29,20 @@ class Graph
 public:
     // An array of pointers to Node to represent
     // adjacency list
-    //std::map<int, Node**>AdjacencyList; ???
-    Node **head;
+    std::map<int, Node*> AdjacencyList;
+    //Node **head;
 
     // Constructor
+
     Graph(Edge edges[], int n, int N)
     {
         // allocate memory
-        head = new Node*[N]();
+        //head = new Node*[N]();
         this->N = N;
 
         // initialize head pointer for all vertices
-        for (int i = 0; i < N; ++i)
-            head[i] = nullptr;
+        /*for (int i = 0; i < N; ++i)
+            head[i] = nullptr;*/
 
         // add edges to the directed graph
         for (unsigned i = 0; i < n; i++)
@@ -51,10 +52,10 @@ public:
             int weight = edges[i].weight;
 
             // insert in the beginning
-            Node* newNode = getAdjListNode(dest, weight, head[src]);
+            Node* newNode = getAdjListNode(dest, weight, AdjacencyList[src]);
 
             // point head pointer to new node
-            head[src] = newNode;
+            AdjacencyList[src] = newNode;
 
         }
     }
@@ -63,24 +64,27 @@ public:
     Graph(std::vector<Edge*> ptrVec, int N)
     {
         // allocate memory
-        head = new Node*[N]();
+        //head = new Node*[N]();
         this->N = N;
 
         // initialize head pointer for all vertices
-        for (int i = 0; i < N; ++i)
+        /*for (int i = 0; i < N; ++i)
             head[i] = nullptr;
-
+        */
         // add edges to the directed graph
+        int contador=0;
         for (auto &elem :ptrVec) {
             int src = elem->src;
             int dest = elem->dest;
             double weight = elem->weight;
 
             // insert in the beginning
-            Node* newNode = getAdjListNode(dest, weight, head[src]);
 
+            Node* newNode = getAdjListNode(dest, weight, AdjacencyList[src]);
+            std::cout<<contador<<std::endl;
             // point head pointer to new node
-            head[src] = newNode;
+            AdjacencyList[src] = newNode;
+            contador++;
         }
     }
 
@@ -88,11 +92,12 @@ public:
 
     // Destructor
     ~Graph() {
-        for (int i = 0; i < N; i++)
+        /*for (int i = 0; i < N; i++)
             delete[] head[i];
 
         delete[] head;
-    }
+        */
+         }
 };
 
 #endif //GRAPHS_LUISPARAADA_CGRAPH_H
