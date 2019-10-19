@@ -52,8 +52,7 @@ public:
             int weight = edges[i].weight;
 
             // insert in the beginning
-            Node* newNode = getAdjListNode(dest, weight, AdjacencyList[src]);
-
+            Node* newNode = getAdjListNode(dest, weight, AdjacencyList[i]);
             // point head pointer to new node
             AdjacencyList[src] = newNode;
 
@@ -72,7 +71,6 @@ public:
             head[i] = nullptr;
         */
         // add edges to the directed graph
-        int contador=0;
         for (auto &elem :ptrVec) {
             int src = elem->src;
             int dest = elem->dest;
@@ -81,10 +79,8 @@ public:
             // insert in the beginning
 
             Node* newNode = getAdjListNode(dest, weight, AdjacencyList[src]);
-            std::cout<<contador<<std::endl;
             // point head pointer to new node
             AdjacencyList[src] = newNode;
-            contador++;
         }
     }
 
