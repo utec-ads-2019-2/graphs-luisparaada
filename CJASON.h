@@ -43,7 +43,6 @@ public:
         d.Accept(writer);
         std::cout << buffer.GetString() << std::endl;
     };
-
     void printIDandDestination();
 
     int getNumberAirports(){
@@ -97,8 +96,6 @@ public:
 
         return vec;
     }
-
-
 
 
 };

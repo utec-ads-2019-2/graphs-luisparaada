@@ -9,32 +9,27 @@
 #include "ENode.h"
 #include <map>
 
+void printList(Node* ptr, int i);
+
 class Graph
 {
+private:
     // Function to allocate new node of Adjacency List
-    Node* getAdjListNode(int value, double weight, Node* head)
+    static Node* getAdjListNode(tipoEntero value, tipoWeight weight, Node* head)
     {
-        Node* newNode = new Node;
-        newNode->val = value;
-        newNode->cost = weight;
-
-        // point new node to current head
-        newNode->next = head;
-
+        Node* newNode = new Node(value, weight, head);
         return newNode;
     }
-    int N;  // number of nodes in the graph
 
+    size_t N;  // number of nodes in the graph
 
 public:
     // An array of pointers to Node to represent
     // adjacency list
-    std::map<int, Node*> AdjacencyList;
+    std::map<tipoEntero, Node*> AdjacencyList;
     //Node **head;
 
-    // Constructor
-
-    Graph(Edge edges[], int n, int N)
+    Graph(Edge edges[], size_t n, size_t N)
     {
         // allocate memory
         //head = new Node*[N]();
@@ -45,11 +40,11 @@ public:
             head[i] = nullptr;*/
 
         // add edges to the directed graph
-        for (unsigned i = 0; i < n; i++)
+        for (size_t i = 0; i < n; i++)
         {
-            int src = edges[i].src;
-            int dest = edges[i].dest;
-            int weight = edges[i].weight;
+            tipoEntero src = edges[i].src;
+            tipoEntero dest = edges[i].dest;
+            tipoWeight weight = edges[i].weight;
 
             // insert in the beginning
             Node* newNode = getAdjListNode(dest, weight, AdjacencyList[i]);
@@ -59,8 +54,7 @@ public:
         }
     }
 
-
-    Graph(std::vector<Edge*> ptrVec, int N)
+    Graph(const std::vector<Edge*>& ptrVec, size_t N)
     {
         // allocate memory
         //head = new Node*[N]();
@@ -71,29 +65,82 @@ public:
             head[i] = nullptr;
         */
         // add edges to the directed graph
-        for (auto &elem :ptrVec) {
-            int src = elem->src;
-            int dest = elem->dest;
-            double weight = elem->weight;
+        for (auto &elem :ptrVec)
+            insert(elem->src, elem->dest, elem->weight);
+    }
 
-            // insert in the beginning
+    void insert(tipoEntero src, tipoEntero dest, tipoWeight weight){
+        // insert in the beginning
+        Node* newNode = getAdjListNode(dest, weight, AdjacencyList[src]);
+        // point head pointer to new node
+        AdjacencyList[src] = newNode;
+    }
 
-            Node* newNode = getAdjListNode(dest, weight, AdjacencyList[src]);
-            // point head pointer to new node
-            AdjacencyList[src] = newNode;
+    void remove(tipoEntero src, tipoEntero dest){
+        Node* temp = AdjacencyList[src];
+        Node* prev = nullptr;
+
+        if(temp != nullptr and temp->val == dest){
+            AdjacencyList[src] = nullptr;
+            AdjacencyList.erase(src);
+            delete temp;
+            return;
+        }
+
+        while(temp!= nullptr and temp->val != dest){
+            prev = temp;
+            temp = temp->next;
+        }
+
+        if (temp == nullptr) return;
+        if(prev != nullptr)
+            prev->next = temp->next;
+        delete temp;
+
+    }
+
+    void clear(){
+        for(auto &it : AdjacencyList){
+            Node* current = it.second;
+            Node* next = nullptr;
+
+            while(current != nullptr){
+                next = current->next;
+                delete current;
+                current = next;
+            }
+            it.second = nullptr;
+        }
+        AdjacencyList.clear();
+    }
+
+    void printAdjecentList(){
+        for (auto & it : AdjacencyList)
+        {
+            // print all neighboring vertices of vertex i
+            printList(it.second, it.first);
         }
     }
 
 
-
     // Destructor
-    ~Graph() {
-        /*for (int i = 0; i < N; i++)
-            delete[] head[i];
-
-        delete[] head;
-        */
-         }
+    virtual ~Graph() {
+        clear();
+    }
 };
+
+// print all neighboring vertices of given vertex
+void printList(Node* ptr, int i)
+{
+    while (ptr != nullptr)
+    {
+        std::cout << "(" << i << ", " << ptr->val
+             << ", " << ptr->cost << ") ";
+
+        ptr = ptr->next;
+    }
+
+    std::cout << std::endl;
+}
 
 #endif //GRAPHS_LUISPARAADA_CGRAPH_H
