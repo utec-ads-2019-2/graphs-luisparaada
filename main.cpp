@@ -15,10 +15,17 @@ int main()
         cout<<airport.generateEdges()[i]->src<<endl;
     }*/
 
-    Graph graph(airport.generateEdges(), airport.getNumberAirports());
-    graph.remove(1,2);
-    graph.remove(2,1);
-    graph.remove(12,18);
+    DirectedGraph graph(airport.generateEdges());
+
+    //graph.remove(1,5);
+    //graph.remove(1,2);
+    //graph.remove(1,4);
+    //graph.remove(1,3);
+    //graph.remove(10,5446);
+
+    std::cout << "nodos: "<< graph.getNumberNodes() << std::endl;
+    std::cout  << "edges: "<< graph.getNumberEdges() << std::endl;
+    std::cout  << "density: "<< graph.getDensity() << std::endl;
 
     graph.printAdjecentList();
 

@@ -11,37 +11,48 @@
 
 void printList(Node* ptr, int i);
 
-class Graph
+class DirectedGraph
 {
 private:
+    std::map<tipoEntero, Node*> AdjacencyList;
+
+    unsigned long numberNodes;
+    unsigned long numberEdges;
+
     // Function to allocate new node of Adjacency List
-    static Node* getAdjListNode(tipoEntero value, tipoWeight weight, Node* head)
+    Node* getAdjListNode(tipoEntero value, tipoWeight weight, Node* head)
     {
         Node* newNode = new Node(value, weight, head);
+        //test++;
         return newNode;
     }
 
-    size_t N;  // number of nodes in the graph
 
 public:
     // An array of pointers to Node to represent
     // adjacency list
-    std::map<tipoEntero, Node*> AdjacencyList;
     //Node **head;
+    unsigned long getNumberNodes() const {
+        return numberNodes;
+    }
 
-    Graph(Edge edges[], size_t n, size_t N)
+    unsigned long getNumberEdges() const {
+        return numberEdges;
+    }
+
+
+    DirectedGraph(Edge edges[], unsigned long n, unsigned long numberNodes)
     {
         // allocate memory
-        //head = new Node*[N]();
-        this->N = N;
+        //head = new Node*[numberNodes]();
+        this->numberNodes = numberNodes;
 
         // initialize head pointer for all vertices
-        /*for (int i = 0; i < N; ++i)
+        /*for (int i = 0; i < numberNodes; ++i)
             head[i] = nullptr;*/
 
         // add edges to the directed graph
-        for (size_t i = 0; i < n; i++)
-        {
+        for (unsigned long i = 0; i < n; i++){
             tipoEntero src = edges[i].src;
             tipoEntero dest = edges[i].dest;
             tipoWeight weight = edges[i].weight;
@@ -50,23 +61,15 @@ public:
             Node* newNode = getAdjListNode(dest, weight, AdjacencyList[i]);
             // point head pointer to new node
             AdjacencyList[src] = newNode;
-
         }
     }
 
-    Graph(const std::vector<Edge*>& ptrVec, size_t N)
+    DirectedGraph(const std::vector<Edge*>& ptrVec)
     {
-        // allocate memory
-        //head = new Node*[N]();
-        this->N = N;
-
-        // initialize head pointer for all vertices
-        /*for (int i = 0; i < N; ++i)
-            head[i] = nullptr;
-        */
-        // add edges to the directed graph
-        for (auto &elem :ptrVec)
+        numberEdges = 0;
+        for(auto &elem :ptrVec)
             insert(elem->src, elem->dest, elem->weight);
+
     }
 
     void insert(tipoEntero src, tipoEntero dest, tipoWeight weight){
@@ -74,6 +77,8 @@ public:
         Node* newNode = getAdjListNode(dest, weight, AdjacencyList[src]);
         // point head pointer to new node
         AdjacencyList[src] = newNode;
+        numberNodes = AdjacencyList.size();
+        numberEdges++;
     }
 
     void remove(tipoEntero src, tipoEntero dest){
@@ -81,22 +86,26 @@ public:
         Node* prev = nullptr;
 
         if(temp != nullptr and temp->val == dest){
-            AdjacencyList[src] = nullptr;
-            AdjacencyList.erase(src);
+            AdjacencyList[src] = temp->next;
             delete temp;
-            return;
+
+        } else {
+
+            while(temp!= nullptr and temp->val != dest){
+                prev = temp;
+                temp = temp->next;
+            }
+            if (temp == nullptr) return;
+            if(prev != nullptr)
+                prev->next = temp->next;
+            delete temp;
         }
 
-        while(temp!= nullptr and temp->val != dest){
-            prev = temp;
-            temp = temp->next;
+        if(AdjacencyList[src] == nullptr){
+            AdjacencyList.erase(src);
+            --numberNodes;
         }
-
-        if (temp == nullptr) return;
-        if(prev != nullptr)
-            prev->next = temp->next;
-        delete temp;
-
+        numberEdges--;
     }
 
     void clear(){
@@ -112,6 +121,7 @@ public:
             it.second = nullptr;
         }
         AdjacencyList.clear();
+        numberNodes = numberEdges = 0;
     }
 
     void printAdjecentList(){
@@ -123,8 +133,15 @@ public:
     }
 
 
+
+    long double getDensity(){
+        long double e = numberEdges/1.;
+        long double n = numberNodes/1.;
+        return e/(n*(n-1.0));
+    }
+
     // Destructor
-    virtual ~Graph() {
+    virtual ~DirectedGraph() {
         clear();
     }
 };

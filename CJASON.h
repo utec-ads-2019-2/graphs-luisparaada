@@ -48,6 +48,9 @@ public:
     int getNumberAirports(){
         return d.Size();
     }
+    int getNumberVector(){
+        return vec.size();
+    }
 
     int maxId(){
         int temp = 0;
