@@ -13,7 +13,8 @@ struct Node {
     tipoEntero val;
     tipoWeight cost;
     Node* next;
-    Node(tipoEntero val, tipoWeight cost, Node *next) : val(val), cost(cost), next(next) {}
+    int color;
+    Node(tipoEntero val, tipoWeight cost, Node *next) : val(val), cost(cost), next(next), color(0) {}
 };
 
 // Data structure to store graph edges

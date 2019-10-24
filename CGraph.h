@@ -46,7 +46,7 @@ public:
             tipoEntero dest = edges[i].dest;
             tipoWeight weight = edges[i].weight;
 
-            // insert in the beginning
+            // insertEdges in the beginning
             Node* newNode = getAdjListNode(dest, weight, AdjacencyList[i]);
             // point head pointer to new node
             AdjacencyList[src] = newNode;
@@ -56,9 +56,15 @@ public:
 
     Graph(const std::vector<Edge*>& ptrVec, size_t N)
     {
+<<<<<<< Updated upstream
         // allocate memory
         //head = new Node*[N]();
         this->N = N;
+=======
+        numberEdges = 0;
+        for(auto &elem :ptrVec)
+            insertEdges(elem->src, elem->dest, elem->weight);
+>>>>>>> Stashed changes
 
         // initialize head pointer for all vertices
         /*for (int i = 0; i < N; ++i)
@@ -69,14 +75,14 @@ public:
             insert(elem->src, elem->dest, elem->weight);
     }
 
-    void insert(tipoEntero src, tipoEntero dest, tipoWeight weight){
-        // insert in the beginning
+    void insertEdges(tipoEntero src, tipoEntero dest, tipoWeight weight){
+        // insertEdges in the beginning
         Node* newNode = getAdjListNode(dest, weight, AdjacencyList[src]);
         // point head pointer to new node
         AdjacencyList[src] = newNode;
     }
 
-    void remove(tipoEntero src, tipoEntero dest){
+    void removeEdges(tipoEntero src, tipoEntero dest){
         Node* temp = AdjacencyList[src];
         Node* prev = nullptr;
 

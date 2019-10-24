@@ -1335,7 +1335,7 @@ private:
                 typename InputStream::Ch* head = is.PutBegin();
                 const size_t length = s.Tell() - startOffset;
                 RAPIDJSON_ASSERT(length <= 0xFFFFFFFF);
-                // unable to insert the \0 character here, it will erase the comma after this number
+                // unable to insertEdges the \0 character here, it will erase the comma after this number
                 const typename TargetEncoding::Ch* const str = reinterpret_cast<typename TargetEncoding::Ch*>(head);
                 cont = handler.RawNumber(str, SizeType(length), false);
             }
