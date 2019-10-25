@@ -30,7 +30,7 @@ struct Edge2 {
         this->dest = std::stoi(dest);
     }
 
-    Edge2(tipoEntero src, tipoEntero dest) : src(src), dest(dest) {}
+    Edge2(tipoEntero src, tipoEntero deprintListst) : src(src), dest(dest) {}
     Edge2(tipoEntero src, tipoEntero dest, tipoDouble weight) : src(src), dest(dest), weight(weight) {}
 };
 struct Node{
