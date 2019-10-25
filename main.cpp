@@ -28,6 +28,9 @@ int main()
     std::cout  << "density: "<< graph.getDensity() << std::endl;
 
     graph.printAdjecentList();
+    std::cout<<std::endl<<"HOlA"<<std::endl;
+    graph.delete_node(7275);
+    graph.printAdjecentList();
 
 
     return 0;

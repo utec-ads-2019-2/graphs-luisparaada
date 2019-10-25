@@ -4,30 +4,40 @@
 
 #ifndef GRAPHS_LUISPARAADA_ENODE_H
 #define GRAPHS_LUISPARAADA_ENODE_H
-
+#include <vector>
 typedef int tipoEntero; //Edges
-typedef double tipoWeight; //Peso
+typedef double tipoDouble; //Peso
 
 // Data structure to store Adjacency list nodes
-struct Node {
+
+
+struct Edge {
     tipoEntero val;
-    tipoWeight cost;
-    Node* next;
-    Node(tipoEntero val, tipoWeight cost, Node *next) : val(val), cost(cost), next(next) {}
+    tipoDouble cost;
+    Edge* next;
+    Edge(tipoEntero val, tipoDouble cost, Edge *next) : val(val), cost(cost), next(next) {}
 };
 
 // Data structure to store graph edges
-struct Edge {
+struct Edge2 {
     tipoEntero src, dest;
-    tipoWeight weight;
+    tipoDouble weight;
 
-    Edge(std::string src, std::string dest){
+    Edge2(std::string src, std::string dest){
         this->src = std::stoi(src);
         this->dest = std::stoi(dest);
     }
 
-    Edge(tipoEntero src, tipoEntero dest) : src(src), dest(dest) {}
-    Edge(tipoEntero src, tipoEntero dest, tipoWeight weight) : src(src), dest(dest), weight(weight) {}
+    Edge2(tipoEntero src, tipoEntero dest) : src(src), dest(dest) {}
+    Edge2(tipoEntero src, tipoEntero dest, tipoDouble weight) : src(src), dest(dest), weight(weight) {}
 };
+struct Node{
+    tipoDouble x;
+    tipoDouble y;
+    tipoEntero id;
+    std::vector<Edge> vector_de_edges;
+    Node (int x1,int y1,unsigned int id1):x(x1),y(y1),id(id1){};
+};
+
 
 #endif //GRAPHS_LUISPARAADA_ENODE_H
