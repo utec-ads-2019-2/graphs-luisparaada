@@ -77,6 +77,7 @@ public:
             std::cout<<"nodo inicial y/o final no existen"<<std::endl;
         }else{
             AdjacencyList[idfrom]->vector_de_edges.emplace_back(new Edge(AdjacencyList[idfrom],AdjacencyList[idto],weight,idfrom,idto));
+            std::cout<<"edge creado"<<std::endl;
         }
         numberEdges++;
     }
@@ -90,28 +91,36 @@ public:
         }
     }
 
-    void delete_node(tipoEntero val){
-        for (auto it=AdjacencyList.begin();it!=AdjacencyList.end();it++){
-            if (it->first==val){
-                continue;
-            }else {
-                std::cout<<"WTF"<<std::endl;
-                auto temp=it->second->vector_de_edges;
-                for (auto it2=temp.begin();it2!=temp.end();it2++){
-                    if (it2->idto==val){
-                        temp.erase(it2);
-                        numberEdges--;// se remueven los edges de todos los nodos que apuntan al que queremos eliminar y se disminuye en 1 cada vez que se hace esto
-                        break;
-                    }
-                }
+    void delete_node(tipoEntero val) {
+        if (AdjacencyList.find(val) != AdjacencyList.end()) {
 
+
+            for (auto it = AdjacencyList.begin(); it != AdjacencyList.end(); it++) {
+                if (it->first == val) {
+                    continue;
+                } else {
+                    auto temp = it->second->vector_de_edges;
+                    for (auto it2 = temp.begin(); it2 != temp.end(); it2++) {
+                        if (it2->idto == val) {
+                            temp.erase(it2);
+                            numberEdges--;// se remueven los edges de todos los nodos que apuntan al que queremos eliminar y se disminuye en 1 cada vez que se hace esto
+
+                            break;
+                        }
+                    }
+
+                }
             }
+            auto temporal = AdjacencyList[val];
+            numberEdges -= temporal->vector_de_edges.size(); //se disminuye una cantidad N que es el size de los edges que contenia el nodo que se quiere eliminar
+            temporal->vector_de_edges.clear();
+            AdjacencyList.erase(val);
+            numberNodes--; // se elimina el nodo y se disminuye en 1 el contador;
+            std::cout << "nodo eliminado" << std::endl;
+        }else{
+            std::cout<<"nodo no encontrado"<<std::endl;
         }
-        auto temporal =AdjacencyList[val];
-        numberEdges-=temporal->vector_de_edges.size(); //se disminuye una cantidad N que es el size de los edges que contenia el nodo que se quiere eliminar
-        temporal->vector_de_edges.clear();
-        AdjacencyList.erase(val);
-        numberNodes--; // se elimina el nodo y se disminuye en 1 el contador;
+
     }
 
     void remove_edge(tipoEntero idfrom, tipoEntero idto){
