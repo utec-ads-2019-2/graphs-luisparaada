@@ -131,31 +131,25 @@ public:
         AdjacencyList.erase(val);
     }
 
-    void remove(tipoEntero src, tipoEntero dest){
-        Edge* temp = AdjacencyList[src];
-        Edge* prev = nullptr;
+    void remove_edge(tipoEntero idfrom, tipoEntero idto){
+        if (AdjacencyList.find(idfrom)==AdjacencyList.end()){
+            std::cout<<"No existe el nodo from"<<std::endl;
+        }else{
+            if(AdjacencyList[idfrom]->vector_de_edges.empty()){
+                std::cout<<"no hay ningun edge en el nodo from"<<std::endl;
 
-        if(temp != nullptr and temp->val == dest){
-            AdjacencyList[src] = temp->next;
-            delete temp;
+            }else{
+                for (auto it=AdjacencyList[idfrom]->vector_de_edges.begin();it!=AdjacencyList[idfrom]->vector_de_edges.end();it++){
+                    if (it->idto==idto){
+                        std::cout<<"edge removido"<<std::endl;
+                        return;
+                    }
+                }
+                std::cout<<"edge no encontrado"<<std::endl;
 
-        } else {
-
-            while(temp!= nullptr and temp->val != dest){
-                prev = temp;
-                temp = temp->next;
             }
-            if (temp == nullptr) return;
-            if(prev != nullptr)
-                prev->next = temp->next;
-            delete temp;
         }
 
-        if(AdjacencyList[src] == nullptr){
-            AdjacencyList.erase(src);
-            --numberNodes;
-        }
-        numberEdges--;
     }
 
     void clear(){
