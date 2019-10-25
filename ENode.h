@@ -9,13 +9,15 @@ typedef int tipoEntero; //Edges
 typedef double tipoDouble; //Peso
 
 // Data structure to store Adjacency list nodes
-
+struct Edge;
+struct Node;
+struct Edge2;
 
 struct Edge {
-    tipoEntero val;
-    tipoDouble cost;
-    Edge* next;
-    Edge(tipoEntero val, tipoDouble cost, Edge *next) : val(val), cost(cost), next(next) {}
+    Node* from,*to;
+    tipoDouble weight;
+    tipoEntero idfrom,idto;
+    Edge(Node* from1, Node* to1, tipoDouble weight1,tipoEntero idfrom1,tipoEntero idto1) : from(from1), to(to1), weight(weight1),idfrom(idfrom1),idto(idto1) {};
 };
 
 // Data structure to store graph edges

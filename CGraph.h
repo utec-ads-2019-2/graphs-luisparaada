@@ -72,18 +72,18 @@ public:
 
     }
 
-    void insert(tipoEntero src, tipoEntero dest, tipoDouble weight){
-        // insert in the beginning
-        Edge* newNode = getAdjListNode(dest, weight, AdjacencyList[src]);
-        // point head pointer to new node
-        AdjacencyList[src] = newNode;
-        numberNodes = AdjacencyList.size();
+    void insert_Edge(tipoEntero idto,tipoEntero idfrom,tipoDouble weight){
+        if (AdjacencyList.find(idfrom)==AdjacencyList.end() or AdjacencyList.find(idto)==AdjacencyList.end()){
+            std::cout<<"nodo inicial y/o final no existen"<<std::endl;
+        }else{
+            AdjacencyList[idfrom]->vector_de_edges.emplace_back(new Edge(AdjacencyList[idfrom],AdjacencyList[idto],weight,idfrom,idto));
+        }
         numberEdges++;
     }
 
-    void insert_node(tipoEntero x, tipoEntero y,unsigned int id){
-        if(AdjacencyList.find(val)==AdjacencyList.end()){
-            AdjacencyList[val] = new Node(val, cost, nullptr);
+    void insert_node(tipoEntero x, tipoEntero y, int id){
+        if(AdjacencyList.find(id)==AdjacencyList.end()){
+            AdjacencyList[id] = new Node(x, y, id);
             numberNodes++;
         }else{
             std::cout<<"este nodo ya existe"<<std::endl;
