@@ -1,21 +1,24 @@
 #include <iostream>
 #include "CGraph.h"
-#include "CJASON.h"
+#include "CJSON.h"
 
 using namespace std;
 
-
+const char *const mode = "r"; // rb for windows
 
 int main()
 {
-    CJASON airport("JSON/airports.json");
+    CJSON airport("JSON/airports.json", mode);
+
     //airport.print();
 
-    /*for( int i=0;i<airport.generateEdges().size();i++){
-        cout<<airport.generateEdges()[i]->src<<endl;
-    }*/
+    DirectedGraph graph(airport.getDocument());
 
-    DirectedGraph graph(airport.generateEdges());
+
+//    graph.insert_Node(5,5,1);
+//    graph.insert_Node(10,10,2);
+//
+//    graph.insert_Edge(2,1,6);
 
     //graph.remove(1,5);
     //graph.remove(1,2);
@@ -27,9 +30,9 @@ int main()
     std::cout  << "edges: "<< graph.getNumberEdges() << std::endl;
     std::cout  << "density: "<< graph.getDensity() << std::endl;
 
-    graph.printAdjecentList();
-    std::cout<<std::endl<<"HOlA"<<std::endl;
-    graph.delete_node(7275);
+    //graph.printAdjecentList();
+    std::cout<<std::endl<<std::endl;
+    //graph.delete_Node(7275);
     graph.printAdjecentList();
 
 

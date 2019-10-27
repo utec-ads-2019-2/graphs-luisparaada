@@ -5,33 +5,42 @@
 #ifndef GRAPHS_LUISPARAADA_CGRAPH_H
 #define GRAPHS_LUISPARAADA_CGRAPH_H
 
-
-#include "ENode.h"
 #include <map>
 #include <algorithm>
-void printList(Node* ptr, int i);
+#include "ENode.h"
+#include "HaversineEquation.h"
+#include "rapidjson/document.h" //JSON Compatibility
 
-class DirectedGraph
+
+class Graph
 {
-private:
+protected:
     std::map<tipoEntero, Node*> AdjacencyList;
 
     unsigned long numberNodes;
     unsigned long numberEdges;
 
-    // Function to allocate new node of Adjacency List
-    Edge* getAdjListNode(tipoEntero value, tipoDouble weight, Edge* head)//TO DO
-    {
-        Edge* newNode = new Edge(value, weight, head);
-        //test++;
-        return newNode;
+public:
+    long double getDensity(){
+        long double e = numberEdges/1.;
+        long double n = numberNodes/1.;
+        return e/(n*(n-1.0));
     }
 
+    void printAdjecentList(){
+        for (auto  it : AdjacencyList)
+        {
+            // print all neighboring vertices of vertex i
+            for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
+            {
+                std::cout << "(" << it.first << ", " << iter->idto
+                          << ", " << iter->weight << ") ";
+            }
 
-public:
-    // An array of pointers to Edge to represent
-    // adjacency list
-    //Edge **head;
+            std::cout << std::endl;
+        }
+    }
+
     unsigned long getNumberNodes() const {
         return numberNodes;
     }
@@ -40,16 +49,33 @@ public:
         return numberEdges;
     }
 
+    void clear(){
+        for(auto it : AdjacencyList){
+            it.second->vector_de_edges.clear();
 
-    DirectedGraph(Edge2 edges[], unsigned long n, unsigned long numberNodes)//TODO
+        }
+        AdjacencyList.clear();
+        numberNodes = numberEdges = 0;
+    }
+
+    virtual ~Graph() {
+        clear();
+    }
+
+};
+
+class DirectedGraph : public Graph
+{
+public:
+/*    DirectedGraph(Edge2 edges[], unsigned long n, unsigned long numberNodes)//TODO
     {
         // allocate memory
         //head = new Edge*[numberNodes]();
         this->numberNodes = numberNodes;
 
         // initialize head pointer for all vertices
-        /*for (int i = 0; i < numberNodes; ++i)
-            head[i] = nullptr;*/
+        *//*for (int i = 0; i < numberNodes; ++i)
+            head[i] = nullptr;*//*
 
         // add edges to the directed graph
         for (unsigned long i = 0; i < n; i++){
@@ -62,27 +88,72 @@ public:
             // point head pointer to new node
             AdjacencyList[src] = newNode;
         }
-    }
+    }*/
 
-    DirectedGraph(const std::vector<Edge2*>& ptrVec)//TO DO
+/*    DirectedGraph(const std::vector<Edge2*>& ptrVec)//TO DO
     {
         numberEdges = 0;
         for(auto &elem :ptrVec)
             insert(elem->src, elem->dest, elem->weight);
 
+    }*/
+
+
+    DirectedGraph() {
+        numberEdges=numberNodes=0;
     }
+
+    explicit DirectedGraph(const rapidjson::Document& d) {
+        numberEdges=numberNodes=0;
+
+        std::map<tipoID, std::pair<tipoDouble, tipoDouble>> coordenates;
+
+        for(auto itr = d.Begin(); itr != d.End() ; ++itr){
+            if (itr->HasMember("Id")) {
+                auto id = (*itr)["Id"].GetString();
+                std::string latitude = (*itr)["Latitude"].GetString();
+                std::string longitude = (*itr)["Longitude"].GetString();
+
+                insert_Node(std::stod(latitude), std::stod(longitude), std::stoi(id));
+
+                coordenates[std::stoi(id)] = std::make_pair(std::stod(latitude),std::stod(longitude));
+
+            } else {
+                throw std::invalid_argument( "NO existe el campo Id en un objeto del JASON" );
+            }
+        }
+
+        for(auto itr = d.Begin(); itr != d.End() ; ++itr){
+            if (itr->HasMember("Id")) {
+                tipoID idFrom = std::stoi((*itr)["Id"].GetString());
+
+                const rapidjson::Value& a = (*itr)["destinations"];
+                for (rapidjson::SizeType i = 0; i < a.Size(); i++){
+                    tipoID idTo = std::stoi(a[i].GetString());
+                    tipoDouble weight = getDistanceFromCoordenatesHaversine(coordenates[idFrom].first,coordenates[idFrom].second,coordenates[idTo].first,coordenates[idTo].second);
+
+                    insert_Edge(idTo,idFrom,weight);
+                }
+            } else {
+                throw std::invalid_argument( "NO existe el campo Id en un objeto del JASON" );
+            }
+        }
+
+    }
+
+
 
     void insert_Edge(tipoEntero idto,tipoEntero idfrom,tipoDouble weight){
         if (AdjacencyList.find(idfrom)==AdjacencyList.end() or AdjacencyList.find(idto)==AdjacencyList.end()){
             std::cout<<"nodo inicial y/o final no existen"<<std::endl;
         }else{
-            AdjacencyList[idfrom]->vector_de_edges.emplace_back(new Edge(AdjacencyList[idfrom],AdjacencyList[idto],weight,idfrom,idto));
-            std::cout<<"edge creado"<<std::endl;
+            AdjacencyList[idfrom]->vector_de_edges.emplace_back(AdjacencyList[idfrom],AdjacencyList[idto],weight,idfrom,idto);
+            //std::cout<<"edge creado"<<std::endl;
         }
         numberEdges++;
     }
 
-    void insert_node(tipoEntero x, tipoEntero y, int id){
+    void insert_Node(tipoEntero x, tipoEntero y, tipoID id){
         if(AdjacencyList.find(id)==AdjacencyList.end()){
             AdjacencyList[id] = new Node(x, y, id);
             numberNodes++;
@@ -91,7 +162,7 @@ public:
         }
     }
 
-    void delete_node(tipoEntero val) {
+    void delete_Node(tipoEntero val) {
         if (AdjacencyList.find(val) != AdjacencyList.end()) {
 
 
@@ -123,7 +194,7 @@ public:
 
     }
 
-    void remove_edge(tipoEntero idfrom, tipoEntero idto){
+    void remove_Edge(tipoEntero idfrom, tipoEntero idto){
         if (AdjacencyList.find(idfrom)==AdjacencyList.end()){
             std::cout<<"No existe el nodo from"<<std::endl;
         }else{
@@ -146,47 +217,16 @@ public:
 
     }
 
-    void clear(){
-        for(auto it : AdjacencyList){
-            it.second->vector_de_edges.clear();
-
-        }
-        AdjacencyList.clear();
-        numberNodes = numberEdges = 0;
-    }
-
-    void printAdjecentList(){
-        for (auto  it : AdjacencyList)
-        {
-            // print all neighboring vertices of vertex i
-            printList(it.second, it.first);
-        }
-    }
-
-
-
-    long double getDensity(){
-        long double e = numberEdges/1.;
-        long double n = numberNodes/1.;
-        return e/(n*(n-1.0));
-    }
-
-    // Destructor
-    virtual ~DirectedGraph() {
-        clear();
-    }
 };
 
-// print all neighboring vertices of given vertex
-void printList(Node* ptr, int i)
+class UndirectedGraph : public Graph
 {
-    for (auto it=ptr->vector_de_edges.begin();it!=ptr->vector_de_edges.end();it++)
-    {
-        std::cout << "(" << i << ", " << it->idto
-             << ", " << it->weight << ") ";
-    }
+private:
 
-    std::cout << std::endl;
-}
+public:
+
+
+};
+
 
 #endif //GRAPHS_LUISPARAADA_CGRAPH_H
