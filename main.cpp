@@ -34,7 +34,13 @@ int main()
     std::cout<<std::endl<<std::endl;
     //graph.delete_Node(7275);
     graph.printAdjecentList();
+    if (graph.know_if_convex()){
+        cout<<"NICE"<<endl;
 
+    }else{
+        cout<<"F"<<endl;
+
+    }
 
     return 0;
 }

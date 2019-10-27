@@ -49,6 +49,16 @@ public:
         return numberEdges;
     }
 
+    std::vector<int> get_nodes(){
+        std::vector<int> retorno;
+        for (auto it:AdjacencyList){
+            retorno.push_back(it.first);
+        }
+        return retorno;
+    }
+
+
+
     void clear(){
         for(auto it : AdjacencyList){
             it.second->vector_de_edges.clear();
@@ -216,6 +226,46 @@ public:
         }
 
     }
+    bool know_if_convex(){
+        auto vector=get_nodes();
+        for (auto it:AdjacencyList){
+            std::cout<<"hola"<<std::endl;
+            if(!deapth_search(it.second,vector)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool deapth_search(Node* nodo,std::vector<tipoEntero > &missing){
+        std::vector<tipoEntero > checked;
+        checked.push_back(nodo->id);
+        int contador=0;
+        int limit=checked.size();
+        while (contador<limit){
+            std::cout<<"checking"<<checked[contador]<<std::endl;
+            Node* temporal=AdjacencyList[checked[contador]];
+            for (auto it2=temporal->vector_de_edges.begin();it2!=temporal->vector_de_edges.end();it2++){
+                auto temporal2=std::find(checked.begin(),checked.end(),it2->idto);
+                std::cout<<"edge: "<<it2->idfrom<<" to "<<it2->idto<<std::endl;
+                if (temporal2!=checked.end()){
+                    continue;
+                }else{
+                    std::cout<<"added "<<it2->idto<<std::endl;
+                    checked.push_back(it2->idto);
+                }
+            }
+            limit=checked.size();
+            contador++;
+        }
+        if(checked.size()!= missing.size()){
+            return false;
+        }else{
+            std::sort(checked.begin(),checked.end());
+            return checked == missing;
+        }
+    }
+
 
 };
 
