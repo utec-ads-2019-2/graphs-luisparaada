@@ -7,10 +7,10 @@
 
 #include <map>
 #include <algorithm>
+#include <vector>
 #include "ENode.h"
 #include "HaversineEquation.h"
 #include "rapidjson/document.h" //JSON Compatibility
-
 
 class Graph
 {
@@ -21,6 +21,21 @@ protected:
     unsigned long numberEdges;
 
 public:
+    Graph() {
+        numberEdges=numberNodes=0;
+    }
+
+    void insert_Node(tipoEntero x, tipoEntero y, tipoID id){
+        if(AdjacencyList.find(id)==AdjacencyList.end()){
+            AdjacencyList[id] = new Node(x, y, id);
+            numberNodes++;
+        }else{
+            std::cout<<"este nodo ya existe"<<std::endl;
+        }
+    }
+
+    virtual void insert_Edge(tipoEntero idto,tipoEntero idfrom,tipoDouble weight) = 0;
+
     long double getDensity(){
         long double e = numberEdges/1.;
         long double n = numberNodes/1.;
@@ -68,6 +83,9 @@ public:
         numberNodes = numberEdges = 0;
     }
 
+
+
+
     virtual ~Graph() {
         clear();
     }
@@ -109,10 +127,6 @@ public:
     }*/
 
 
-    DirectedGraph() {
-        numberEdges=numberNodes=0;
-    }
-
     explicit DirectedGraph(const rapidjson::Document& d) {
         numberEdges=numberNodes=0;
 
@@ -153,7 +167,7 @@ public:
 
 
 
-    void insert_Edge(tipoEntero idto,tipoEntero idfrom,tipoDouble weight){
+    void insert_Edge(tipoEntero idto,tipoEntero idfrom,tipoDouble weight) override{
         if (AdjacencyList.find(idfrom)==AdjacencyList.end() or AdjacencyList.find(idto)==AdjacencyList.end()){
             std::cout<<"nodo inicial y/o final no existen"<<std::endl;
         }else{
@@ -163,19 +177,9 @@ public:
         numberEdges++;
     }
 
-    void insert_Node(tipoEntero x, tipoEntero y, tipoID id){
-        if(AdjacencyList.find(id)==AdjacencyList.end()){
-            AdjacencyList[id] = new Node(x, y, id);
-            numberNodes++;
-        }else{
-            std::cout<<"este nodo ya existe"<<std::endl;
-        }
-    }
 
     void delete_Node(tipoEntero val) {
         if (AdjacencyList.find(val) != AdjacencyList.end()) {
-
-
             for (auto it = AdjacencyList.begin(); it != AdjacencyList.end(); it++) {
                 if (it->first == val) {
                     continue;
@@ -185,7 +189,6 @@ public:
                         if (it2->idto == val) {
                             temp.erase(it2);
                             numberEdges--;// se remueven los edges de todos los nodos que apuntan al que queremos eliminar y se disminuye en 1 cada vez que se hace esto
-
                             break;
                         }
                     }
@@ -267,13 +270,97 @@ public:
     }
 
 
+
 };
+
 
 class UndirectedGraph : public Graph
 {
 private:
+    std::vector<SimpleEdge> sortedEdges;
+
 
 public:
+
+
+    void insert_Edge(tipoEntero id1, tipoEntero id2, tipoDouble weight) override{
+        if ((AdjacencyList.find(id2) == AdjacencyList.end() or AdjacencyList.find(id1) == AdjacencyList.end())or(AdjacencyList.find(id1) == AdjacencyList.end() or AdjacencyList.find(id2) == AdjacencyList.end())){
+            std::cout<<"nodo inicial y/o final no existen"<<std::endl;
+        }else{
+            AdjacencyList[id2]->vector_de_edges.emplace_back(AdjacencyList[id2], AdjacencyList[id1], weight, id2, id1);
+            //AdjacencyList[id1]->vector_de_edges.emplace_back(AdjacencyList[id1], AdjacencyList[id2], weight, id1, id2);
+        }
+        numberEdges++;
+    }
+
+
+    void sortByWeight(){
+        for (auto  it : AdjacencyList)
+        {
+            // print all neighboring vertices of vertex i
+            for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
+            {
+                sortedEdges.emplace_back(iter->weight,it.first,iter->idto);
+            }
+        }
+        std::sort(sortedEdges.begin(), sortedEdges.end(), [](const SimpleEdge &a, const SimpleEdge &b) -> bool {return a.weight < b.weight;});
+    }
+
+    static tipoDouble findinSubset(subset subsets[], int i){
+        if(subsets[i].parent != i)
+            subsets[i].parent = findinSubset(subsets,subsets[i].parent);
+        return subsets[i].parent;
+    }
+
+    static void Union(subset subsets[], tipoDouble x, tipoDouble y) {
+        int xroot = findinSubset(subsets, x);
+        int yroot = findinSubset(subsets, y);
+
+        if(subsets[xroot].rank < subsets[yroot].rank)
+            subsets[xroot].parent = yroot;
+        else if (subsets[xroot].rank > subsets[yroot].rank)
+            subsets[yroot].parent = xroot;
+        else{
+            subsets[yroot].parent = xroot;
+            subsets[xroot].rank++;
+        }
+
+    }
+
+    std::vector<SimpleEdge> kruskal(){
+        std::vector<SimpleEdge> result;
+        auto kruskalResult = new SimpleEdge[numberNodes];
+        int indexEdges = 0, indexSorted = 0;
+
+        sortByWeight();
+
+        auto *subsets = new subset[numberNodes];
+
+        for (int i = 0; i < numberNodes; ++i) {
+            subsets[i].parent = i;
+            subsets[i].rank = 0;
+        }
+
+        while(indexEdges < numberNodes-1 and indexSorted < numberEdges){
+
+            SimpleEdge nextEdge = sortedEdges[indexSorted++];
+
+            tipoDouble x = findinSubset(subsets, nextEdge.idfrom);
+            tipoDouble y = findinSubset(subsets, nextEdge.idto);
+
+            if(x != y){
+                kruskalResult[indexEdges] = nextEdge;
+                result.emplace_back(kruskalResult[indexEdges].weight,kruskalResult[indexEdges].idfrom,kruskalResult[indexEdges].idto);
+                ++indexEdges;
+                Union(subsets, x, y);
+            }
+        }
+        return result;
+    }
+
+
+
+
 
 
 };

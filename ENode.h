@@ -31,5 +31,20 @@ struct Edge {
                                                                                         idto(idto) {}
 };
 
+struct SimpleEdge{
+    tipoDouble weight;
+    tipoEntero idfrom, idto;
+
+    SimpleEdge() {}
+
+    SimpleEdge(tipoDouble weight, tipoEntero idfrom, tipoEntero idto) : weight(weight), idfrom(idfrom), idto(idto) {}
+};
+
+struct subset
+{
+    tipoDouble parent;
+    tipoDouble rank;
+};
+
 
 #endif //GRAPHS_LUISPARAADA_ENODE_H
