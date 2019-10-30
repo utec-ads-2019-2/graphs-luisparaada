@@ -9,6 +9,7 @@ const char *const mode = "r"; // rb for windows
 template <class T>
 void printEdgesFromVector(const vector<T> &vec);
 
+void printCondition(bool is, const std::string& type);
 
 int main()
 {
@@ -36,11 +37,8 @@ int main()
     g2.insert_Edge(2,0,6);
     g2.insert_Edge(0,3,5);
 
-    if (graph.is_convex()){
-        cout<<"El Grafo es Convexo"<<endl;
-    }else{
-        cout<<"El Grafo NO es Convexo"<<endl;
-    }
+    printCondition(graph.is_convex(), "Convexo");
+
 
     //g2.printAdjecentList();
     printEdgesFromVector(g2.kruskal());
@@ -57,15 +55,20 @@ int main()
     dg.insert_Edge(3,2,3);
     dg.insert_Edge(4,2,3);
 
+    //dg.insert_Edge(3,4,2);
+
+    UndirectedGraph ga;
+    ga.insert_Node(0,0,1);
+    ga.insert_Node(0,0,2);
+    ga.insert_Edge(2,1,2);
+
+
+    printCondition(ga.is_convex(), "Bipartido");
+
     //dg.insert_Edge(3,1,3);
     //dg.insert_Edge(3,2,3);
 
-    if (dg.isBipartite()){
-        cout<<"El Grafo es Bipartito"<<endl;
-    }else{
-        cout<<"El Grafo no es Bipartito"<<endl;
-    }
-
+    printCondition(dg.isBipartite(), "Bipartido");
 
     return 0;
 }
@@ -76,5 +79,13 @@ void printEdgesFromVector(const vector<T> &vec) {
     cout << "MST" << endl;
     for(auto elemento : vec){
         cout <<"("<< elemento.idto<<", " <<elemento.idfrom << ", " <<elemento.weight << ")" << endl;
+    }
+}
+
+void printCondition(bool is, const std::string& type){
+    if(is){
+        cout<<"El Grafo es " << type <<endl;
+    }else{
+        cout<<"El Grafo no es " << type <<endl;
     }
 }

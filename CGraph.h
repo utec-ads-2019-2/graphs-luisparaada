@@ -169,8 +169,6 @@ public:
         return true;
     }
 
-
-
     bool is_convex(){
         auto vector=get_nodes();
         for (auto it:AdjacencyList){
