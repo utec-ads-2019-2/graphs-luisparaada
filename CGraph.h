@@ -125,8 +125,13 @@ public:
     {
         std::stack<Node*> stack1;
         std::stack<Node*> stack2;
-
-        auto temporal= AdjacencyList.begin();
+        std::map<int,Node*>::iterator temporal;
+        for (auto it2=AdjacencyList.begin();it2!=AdjacencyList.end();it2++){
+            if(it2->second->vector_de_edges.size()!=0){
+                temporal=it2;
+                break;
+            }
+        }
         temporal->second->color=1;
         for (auto it=temporal->second->vector_de_edges.begin();it!=temporal->second->vector_de_edges.end();it++){
             it->to->color=2;
