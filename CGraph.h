@@ -74,7 +74,113 @@ public:
         return retorno;
     }
 
+    bool deapth_search(Node* nodo,std::vector<tipoEntero > &missing){
+        std::vector<tipoEntero > checked;
+        checked.push_back(nodo->id);
+        int contador=0;
+        int limit=checked.size();
+        while (contador<limit){
+            //std::cout<<"checking"<<checked[contador]<<std::endl;
+            Node* temporal=AdjacencyList[checked[contador]];
+            for (auto it2=temporal->vector_de_edges.begin();it2!=temporal->vector_de_edges.end();it2++){
+                auto temporal2=std::find(checked.begin(),checked.end(),it2->idto);
+                //std::cout<<"edge: "<<it2->idfrom<<" to "<<it2->idto<<std::endl;
+                if (temporal2!=checked.end()){
+                    continue;
+                }else{
+                    //std::cout<<"added "<<it2->idto<<std::endl;
+                    checked.push_back(it2->idto);
+                }
+            }
+            limit=checked.size();
+            contador++;
+        }
+        if(checked.size()!= missing.size()){
+            return false;
+        }else{
+            std::sort(checked.begin(),checked.end());
+            return checked == missing;
+        }
+    }
 
+    bool is_bidirectional(){
+        for (auto it:AdjacencyList){
+            for (auto it2:it.second->vector_de_edges){
+                bool check=false;
+                for (auto it3:AdjacencyList[it2.idto]->vector_de_edges){
+                    if(it3.idto==it2.idfrom){
+                        check=true;
+                        break;
+                    }
+                }
+                if ( !check){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool isBipartite()
+    {
+        std::stack<Node*> stack1;
+        std::stack<Node*> stack2;
+
+        auto temporal= AdjacencyList.begin();
+        temporal->second->color=1;
+        for (auto it=temporal->second->vector_de_edges.begin();it!=temporal->second->vector_de_edges.end();it++){
+            it->to->color=2;
+            stack1.push(it->to);
+        }
+        int colorear=1;
+        //std::cout<<"HOLA"<<std::endl;
+        while (!stack1.empty() ){
+            auto temporal2=stack1.top();
+            //std::cout<<stack1.top()->id<<" "<<stack1.top()->color<<std::endl;
+            stack1.pop();
+            for (auto it=temporal2->vector_de_edges.begin();it!=temporal2->vector_de_edges.end();it++){
+                //std::cout<<"checkeando "<<it->idto<<" con color "<<it->to->color<<std::endl;
+                if(it->to->color==colorear || it->to->color==0){
+                    it->to->color=colorear;
+                    //std::cout<<"el nodo "<<it->idto<<" tiene color "<<it->to->color<<std::endl;
+                    if (it->to->color==0){
+                        stack2.push(it->to);
+                    }
+                }else{
+                    return false;
+                }
+            }
+            if (stack1.empty()){
+                auto temp=stack1;
+                stack1=stack2;
+                stack2=temp;
+                if(colorear==1){
+                    colorear=2;
+                }else{
+                    colorear=1;
+                }
+            }
+
+
+
+
+        }
+
+        return true;
+    }
+
+
+
+    bool is_convex(){
+        auto vector=get_nodes();
+        for (auto it:AdjacencyList){
+            //std::cout<<"hola"<<std::endl;
+            if(!deapth_search(it.second,vector)){
+                return false;
+            }
+        }
+        return true;
+    }
 
     void clear(){
         for(auto it : AdjacencyList){
@@ -229,184 +335,6 @@ public:
 
     }
 
-    bool is_convex(){
-        auto vector=get_nodes();
-        for (auto it:AdjacencyList){
-            std::cout<<"hola"<<std::endl;
-            if(!deapth_search(it.second,vector)){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool deapth_search(Node* nodo,std::vector<tipoEntero > &missing){
-        std::vector<tipoEntero > checked;
-        checked.push_back(nodo->id);
-        int contador=0;
-        int limit=checked.size();
-        while (contador<limit){
-            std::cout<<"checking"<<checked[contador]<<std::endl;
-            Node* temporal=AdjacencyList[checked[contador]];
-            for (auto it2=temporal->vector_de_edges.begin();it2!=temporal->vector_de_edges.end();it2++){
-                auto temporal2=std::find(checked.begin(),checked.end(),it2->idto);
-                std::cout<<"edge: "<<it2->idfrom<<" to "<<it2->idto<<std::endl;
-                if (temporal2!=checked.end()){
-                    continue;
-                }else{
-                    std::cout<<"added "<<it2->idto<<std::endl;
-                    checked.push_back(it2->idto);
-                }
-            }
-            limit=checked.size();
-            contador++;
-        }
-        if(checked.size()!= missing.size()){
-            return false;
-        }else{
-            std::sort(checked.begin(),checked.end());
-            return checked == missing;
-        }
-    }
-
-    bool is_bidirectional(){
-        for (auto it:AdjacencyList){
-            for (auto it2:it.second->vector_de_edges){
-                bool check=false;
-                for (auto it3:AdjacencyList[it2.idto]->vector_de_edges){
-                    if(it3.idto==it2.idfrom){
-                        check=true;
-                        break;
-                    }
-                }
-                if ( !check){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    DirectedGraph get_prim(int key){
-        if (AdjacencyList.find(key)!=AdjacencyList.end()){
-            if(!is_bidirectional() || !is_convex()){
-                std::cout<<"este grafo no es bidireccional o no es conexo, por lo que no se le puede sacar prim"<<std::endl;
-                DirectedGraph retorno;
-                return retorno;
-            }else{
-                std::vector<tipoEntero> nodes_checked;
-                std::vector<tipoEntero> All_nodes=get_nodes();
-                nodes_checked.push_back(key);
-                DirectedGraph retorno;
-                Node* temporalx= AdjacencyList[key];
-                retorno.insert_Node(temporalx->x,temporalx->y,temporalx->id);
-                delete temporalx;
-                int contador=0;
-                while (nodes_checked.size()!=All_nodes.size() && contador<4 ){
-                    std::cout<<"iteracion "<<contador<<std::endl;
-                    Edge *temporal=nullptr;
-                    for (auto it:nodes_checked){
-                        auto temporal2=AdjacencyList[it]->vector_de_edges;
-                        std::cout<<"checkeando el nodo "<<it<<std::endl;
-                        for (int i=0;i<temporal2.size();i++){
-                            std::cout<<"checkeando el edge con valor "<<temporal2[i].weight<<std::endl;
-                            if (temporal)
-                                std::cout<<"temporal tiene peso "<<temporal->weight<<std::endl;
-                            auto encontro_idfrom=find(nodes_checked.begin(),nodes_checked.end(),temporal2[i].idfrom);
-                            auto encontro_idto=find(nodes_checked.begin(),nodes_checked.end(),temporal2[i].idto);
-                            if ( encontro_idfrom==nodes_checked.end() || encontro_idto==nodes_checked.end()){
-                                if(temporal==nullptr){
-                                    temporal=&temporal2[i];
-                                    std::cout<<"encontro vacio"<<std::endl;
-                                }else{
-                                    if (temporal->weight>temporal2[i].weight){
-                                        std::cout<<temporal->weight<<std::endl;
-
-                                        temporal=&temporal2[i];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    auto encontro_idfrom=find(nodes_checked.begin(),nodes_checked.end(),temporal->idfrom);
-                    auto encontro_idto=find(nodes_checked.begin(),nodes_checked.end(),temporal->idto);
-                    if (encontro_idfrom==nodes_checked.end()){
-                        retorno.insert_Node(AdjacencyList[temporal->idfrom]->x,AdjacencyList[temporal->idfrom]->y,AdjacencyList[temporal->idfrom]->id);
-                        nodes_checked.push_back(temporal->idfrom);
-                        std::cout<<temporal->idfrom<<std::endl;
-                    }
-                    if(encontro_idto==nodes_checked.end()){
-                        retorno.insert_Node(AdjacencyList[temporal->idto]->x,AdjacencyList[temporal->idto]->y,AdjacencyList[temporal->idto]->id);
-                        nodes_checked.push_back(temporal->idto);
-                        std::cout<<temporal->idto<<std::endl;
-                    }
-                    retorno.insert_Edge(temporal->idto,temporal->idfrom,getDistanceFromCoordenatesHaversine(AdjacencyList[temporal->idfrom]->x,AdjacencyList[temporal->idfrom]->y,AdjacencyList[temporal->idto]->x,AdjacencyList[temporal->idto]->y));
-                    retorno.insert_Edge(temporal->idfrom,temporal->idto,getDistanceFromCoordenatesHaversine(AdjacencyList[temporal->idfrom]->x,AdjacencyList[temporal->idfrom]->y,AdjacencyList[temporal->idto]->x,AdjacencyList[temporal->idto]->y));
-                    contador++;
-                }
-                retorno.printAdjecentList();
-                return retorno;
-            }
-
-
-        }else{
-            std::cout<<"id no encontrado"<<std::endl;
-        }
-
-    }
-
-
-    bool isBipartite()
-    {
-        std::stack<Node*> stack1;
-        std::stack<Node*> stack2;
-
-        auto temporal= AdjacencyList.begin();
-        temporal->second->color=1;
-        for (auto it=temporal->second->vector_de_edges.begin();it!=temporal->second->vector_de_edges.end();it++){
-            it->to->color=2;
-            stack1.push(it->to);
-        }
-        int colorear=1;
-        std::cout<<"HOLA"<<std::endl;
-        while (!stack1.empty() ){
-            auto temporal2=stack1.top();
-            std::cout<<stack1.top()->id<<" "<<stack1.top()->color<<std::endl;
-            stack1.pop();
-            for (auto it=temporal2->vector_de_edges.begin();it!=temporal2->vector_de_edges.end();it++){
-                std::cout<<"checkeando "<<it->idto<<" con color "<<it->to->color<<std::endl;
-                if(it->to->color==colorear || it->to->color==0){
-                    it->to->color=colorear;
-                    std::cout<<"el nodo "<<it->idto<<" tiene color "<<it->to->color<<std::endl;
-                    if (it->to->color==0){
-                        stack2.push(it->to);
-                    }
-                }else{
-                    return false;
-                }
-            }
-            if (stack1.empty()){
-                auto temp=stack1;
-                stack1=stack2;
-                stack2=temp;
-                if(colorear==1){
-                    colorear=2;
-                }else{
-                    colorear=1;
-                }
-            }
-
-
-
-
-        }
-
-        return true;
-    }
-
-
-
-
 
 };
 
@@ -415,21 +343,6 @@ class UndirectedGraph : public Graph
 {
 private:
     std::vector<SimpleEdge> sortedEdges;
-
-
-public:
-
-
-    void insert_Edge(tipoEntero id1, tipoEntero id2, tipoDouble weight) override{
-        if ((AdjacencyList.find(id2) == AdjacencyList.end() or AdjacencyList.find(id1) == AdjacencyList.end())or(AdjacencyList.find(id1) == AdjacencyList.end() or AdjacencyList.find(id2) == AdjacencyList.end())){
-            std::cout<<"nodo inicial y/o final no existen"<<std::endl;
-        }else{
-            AdjacencyList[id2]->vector_de_edges.emplace_back(AdjacencyList[id2], AdjacencyList[id1], weight, id2, id1);
-            AdjacencyList[id1]->vector_de_edges.emplace_back(AdjacencyList[id1], AdjacencyList[id2], weight, id1, id2);
-        }
-        numberEdges++;
-    }
-
 
     void sortByWeight(){
         for (auto  it : AdjacencyList)
@@ -471,6 +384,20 @@ public:
 
     }
 
+
+public:
+
+
+    void insert_Edge(tipoEntero id1, tipoEntero id2, tipoDouble weight) override{
+        if ((AdjacencyList.find(id2) == AdjacencyList.end() or AdjacencyList.find(id1) == AdjacencyList.end())or(AdjacencyList.find(id1) == AdjacencyList.end() or AdjacencyList.find(id2) == AdjacencyList.end())){
+            std::cout<<"nodo inicial y/o final no existen"<<std::endl;
+        }else{
+            AdjacencyList[id2]->vector_de_edges.emplace_back(AdjacencyList[id2], AdjacencyList[id1], weight, id2, id1);
+            AdjacencyList[id1]->vector_de_edges.emplace_back(AdjacencyList[id1], AdjacencyList[id2], weight, id1, id2);
+        }
+        numberEdges++;
+    }
+
     std::vector<SimpleEdge> kruskal(){
         std::vector<SimpleEdge> result;
         auto kruskalResult = new SimpleEdge[numberNodes];
@@ -501,6 +428,75 @@ public:
         }
         return result;
     }
+
+    DirectedGraph get_prim(int key){
+        if (AdjacencyList.find(key)!=AdjacencyList.end()){
+            if(!is_bidirectional() || !is_convex()){
+                std::cout<<"este grafo no es bidireccional o no es conexo, por lo que no se le puede sacar prim"<<std::endl;
+                DirectedGraph retorno;
+                return retorno;
+            }else{
+                std::vector<tipoEntero> nodes_checked;
+                std::vector<tipoEntero> All_nodes=get_nodes();
+                nodes_checked.push_back(key);
+                DirectedGraph retorno;
+                Node* temporalx= AdjacencyList[key];
+                retorno.insert_Node(temporalx->x,temporalx->y,temporalx->id);
+                delete temporalx;
+                int contador=0;
+                while (nodes_checked.size()!=All_nodes.size() && contador<4 ){
+                    //std::cout<<"iteracion "<<contador<<std::endl;
+                    Edge *temporal=nullptr;
+                    for (auto it:nodes_checked){
+                        auto temporal2=AdjacencyList[it]->vector_de_edges;
+                        //std::cout<<"checkeando el nodo "<<it<<std::endl;
+                        for (int i=0;i<temporal2.size();i++){
+                            //std::cout<<"checkeando el edge con valor "<<temporal2[i].weight<<std::endl;
+                            //if (temporal)
+                            //    std::cout<<"temporal tiene peso "<<temporal->weight<<std::endl;
+                            auto encontro_idfrom=find(nodes_checked.begin(),nodes_checked.end(),temporal2[i].idfrom);
+                            auto encontro_idto=find(nodes_checked.begin(),nodes_checked.end(),temporal2[i].idto);
+                            if ( encontro_idfrom==nodes_checked.end() || encontro_idto==nodes_checked.end()){
+                                if(temporal==nullptr){
+                                    temporal=&temporal2[i];
+                                    //std::cout<<"encontro vacio"<<std::endl;
+                                }else{
+                                    if (temporal->weight>temporal2[i].weight){
+                                        //std::cout<<temporal->weight<<std::endl;
+
+                                        temporal=&temporal2[i];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    auto encontro_idfrom=find(nodes_checked.begin(),nodes_checked.end(),temporal->idfrom);
+                    auto encontro_idto=find(nodes_checked.begin(),nodes_checked.end(),temporal->idto);
+                    if (encontro_idfrom==nodes_checked.end()){
+                        retorno.insert_Node(AdjacencyList[temporal->idfrom]->x,AdjacencyList[temporal->idfrom]->y,AdjacencyList[temporal->idfrom]->id);
+                        nodes_checked.push_back(temporal->idfrom);
+                        //std::cout<<temporal->idfrom<<std::endl;
+                    }
+                    if(encontro_idto==nodes_checked.end()){
+                        retorno.insert_Node(AdjacencyList[temporal->idto]->x,AdjacencyList[temporal->idto]->y,AdjacencyList[temporal->idto]->id);
+                        nodes_checked.push_back(temporal->idto);
+                        //std::cout<<temporal->idto<<std::endl;
+                    }
+                    retorno.insert_Edge(temporal->idto,temporal->idfrom,getDistanceFromCoordenatesHaversine(AdjacencyList[temporal->idfrom]->x,AdjacencyList[temporal->idfrom]->y,AdjacencyList[temporal->idto]->x,AdjacencyList[temporal->idto]->y));
+                    retorno.insert_Edge(temporal->idfrom,temporal->idto,getDistanceFromCoordenatesHaversine(AdjacencyList[temporal->idfrom]->x,AdjacencyList[temporal->idfrom]->y,AdjacencyList[temporal->idto]->x,AdjacencyList[temporal->idto]->y));
+                    contador++;
+                }
+                retorno.printAdjecentList();
+                return retorno;
+            }
+
+
+        }else{
+            std::cout<<"id no encontrado"<<std::endl;
+        }
+
+    }
+
 
 
 
