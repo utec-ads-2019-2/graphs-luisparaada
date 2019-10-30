@@ -8,15 +8,17 @@
 #include <map>
 #include <algorithm>
 #include <vector>
+#include <queue>
 #include "ENode.h"
 #include "HaversineEquation.h"
-#include "rapidjson/document.h" //JSON Compatibility
+#include "rapidjson/document.h"
+
+//JSON Compatibility
 
 class Graph
 {
 protected:
     std::map<tipoEntero, Node*> AdjacencyList;
-
     unsigned long numberNodes;
     unsigned long numberEdges;
 
@@ -95,6 +97,7 @@ public:
 class DirectedGraph : public Graph
 {
 public:
+
 /*    DirectedGraph(Edge2 edges[], unsigned long n, unsigned long numberNodes)//TODO
     {
         // allocate memory
@@ -117,7 +120,6 @@ public:
             AdjacencyList[src] = newNode;
         }
     }*/
-
 /*    DirectedGraph(const std::vector<Edge2*>& ptrVec)//TO DO
     {
         numberEdges = 0;
@@ -126,7 +128,7 @@ public:
 
     }*/
 
-
+    DirectedGraph() {}
     explicit DirectedGraph(const rapidjson::Document& d) {
         numberEdges=numberNodes=0;
 
@@ -165,8 +167,6 @@ public:
 
     }
 
-
-
     void insert_Edge(tipoEntero idto,tipoEntero idfrom,tipoDouble weight) override{
         if (AdjacencyList.find(idfrom)==AdjacencyList.end() or AdjacencyList.find(idto)==AdjacencyList.end()){
             std::cout<<"nodo inicial y/o final no existen"<<std::endl;
@@ -176,7 +176,6 @@ public:
         }
         numberEdges++;
     }
-
 
     void delete_Node(tipoEntero val) {
         if (AdjacencyList.find(val) != AdjacencyList.end()) {
@@ -229,7 +228,8 @@ public:
         }
 
     }
-    bool know_if_convex(){
+
+    bool is_convex(){
         auto vector=get_nodes();
         for (auto it:AdjacencyList){
             std::cout<<"hola"<<std::endl;
@@ -294,8 +294,8 @@ public:
                 DirectedGraph retorno;
                 return retorno;
             }else{
-                std::vector<tipoEntero > nodes_checked;
-                std::vector<tipoEntero > All_nodes=get_nodes();
+                std::vector<tipoEntero> nodes_checked;
+                std::vector<tipoEntero> All_nodes=get_nodes();
                 nodes_checked.push_back(key);
                 DirectedGraph retorno;
                 Node* temporalx= AdjacencyList[key];
@@ -355,6 +355,42 @@ public:
 
     }
 
+
+    bool isBipartite()
+    {
+        bool firstTime = true;
+        std::queue<tipoEntero> q1;
+        std::queue<tipoEntero> q2;
+
+        while (!q1.empty())
+        {
+            for (auto  it : AdjacencyList)
+            {
+                auto from = it.first;
+
+                if(firstTime){
+                    it.second->color = 1;
+                    firstTime = false;
+                }
+
+                for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
+                {
+                    auto to = iter->idto;
+                    iter->to->color = 2;
+                    q1.push(to);
+                }
+
+
+            }
+
+        }
+        return true;
+    }
+
+
+
+
+
 };
 
 
@@ -372,7 +408,7 @@ public:
             std::cout<<"nodo inicial y/o final no existen"<<std::endl;
         }else{
             AdjacencyList[id2]->vector_de_edges.emplace_back(AdjacencyList[id2], AdjacencyList[id1], weight, id2, id1);
-            //AdjacencyList[id1]->vector_de_edges.emplace_back(AdjacencyList[id1], AdjacencyList[id2], weight, id1, id2);
+            AdjacencyList[id1]->vector_de_edges.emplace_back(AdjacencyList[id1], AdjacencyList[id2], weight, id1, id2);
         }
         numberEdges++;
     }
@@ -384,7 +420,14 @@ public:
             // print all neighboring vertices of vertex i
             for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
             {
-                sortedEdges.emplace_back(iter->weight,it.first,iter->idto);
+                auto from = it.first;
+                auto to = iter->idto;
+
+                auto iterador = std::find_if(sortedEdges.begin(),sortedEdges.end(),[from,to](const SimpleEdge &a)-> bool{ return (from == a.idto) and (to == a.idfrom) ;});
+
+                if(iterador == sortedEdges.end()){
+                    sortedEdges.emplace_back(iter->weight,from,to);
+                }
             }
         }
         std::sort(sortedEdges.begin(), sortedEdges.end(), [](const SimpleEdge &a, const SimpleEdge &b) -> bool {return a.weight < b.weight;});
@@ -441,8 +484,6 @@ public:
         }
         return result;
     }
-
-
 
 
 

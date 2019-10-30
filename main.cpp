@@ -21,21 +21,37 @@ int main()
    //DirectedGraph g1;
     //g1.insert_Node(0,0,0);
 
-    UndirectedGraph g2;
-    g2.insert_Node(0,0,0);
-    g2.insert_Node(0,0,1);
-    g2.insert_Node(0,0,2);
-    g2.insert_Node(0,0,3);
+//    UndirectedGraph g2;
+//    g2.insert_Node(0,0,0);
+//    g2.insert_Node(0,0,1);
+//    g2.insert_Node(0,0,2);
+//    g2.insert_Node(0,0,3);
+//
+//    g2.insert_Edge(0,1,10);//
+//    g2.insert_Edge(1,3,15);//
+//    g2.insert_Edge(3,2,4);//
+//    g2.insert_Edge(2,0,6);//
+//    g2.insert_Edge(0,3,5);//
+//
+//    g2.printAdjecentList();
+//
 
-    g2.insert_Edge(0,1,10);//
-    g2.insert_Edge(1,3,15);//
-    g2.insert_Edge(3,2,4);//
-    g2.insert_Edge(2,0,6);//
-    g2.insert_Edge(0,3,5);//
+   // printEdgesFromVector(g2.kruskal());
 
-    g2.printAdjecentList();
 
-    printEdgesFromVector(g2.kruskal());
+    DirectedGraph dg;
+    dg.insert_Node(0,0,1);
+    dg.insert_Node(0,0,2);
+    dg.insert_Node(0,0,3);
+
+    dg.insert_Edge(2,1,2);
+    dg.insert_Edge(3,1,3);
+    dg.insert_Edge(3,2,3);
+
+
+    std::cout << dg.isBipartite();
+
+
 
 //    graph.insert_Node(5,5,1);
 //    graph.insert_Node(10,10,2);

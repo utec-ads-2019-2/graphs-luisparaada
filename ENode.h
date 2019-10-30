@@ -16,8 +16,9 @@ struct Node{
     tipoDouble y;
     tipoEntero id;
     std::vector<Edge> vector_de_edges;
+    int color;
 
-    Node(tipoDouble x, tipoDouble y, tipoEntero id) : x(x), y(y), id(id) {}
+    Node(tipoDouble x, tipoDouble y, tipoEntero id) : x(x), y(y), id(id), color(0) {}
 };
 
 
