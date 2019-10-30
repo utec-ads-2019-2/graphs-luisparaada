@@ -8,7 +8,7 @@
 #include <map>
 #include <algorithm>
 #include <vector>
-#include <queue>
+#include <stack>
 #include "ENode.h"
 #include "HaversineEquation.h"
 #include "rapidjson/document.h"
@@ -358,32 +358,49 @@ public:
 
     bool isBipartite()
     {
-        bool firstTime = true;
-        std::queue<tipoEntero> q1;
-        std::queue<tipoEntero> q2;
+        std::stack<Node*> stack1;
+        std::stack<Node*> stack2;
 
-        while (!q1.empty())
-        {
-            for (auto  it : AdjacencyList)
-            {
-                auto from = it.first;
-
-                if(firstTime){
-                    it.second->color = 1;
-                    firstTime = false;
+        auto temporal= AdjacencyList.begin();
+        temporal->second->color=1;
+        for (auto it=temporal->second->vector_de_edges.begin();it!=temporal->second->vector_de_edges.end();it++){
+            it->to->color=2;
+            stack1.push(it->to);
+        }
+        int colorear=1;
+        std::cout<<"HOLA"<<std::endl;
+        while (!stack1.empty() ){
+            auto temporal2=stack1.top();
+            std::cout<<stack1.top()->id<<" "<<stack1.top()->color<<std::endl;
+            stack1.pop();
+            for (auto it=temporal2->vector_de_edges.begin();it!=temporal2->vector_de_edges.end();it++){
+                std::cout<<"checkeando "<<it->idto<<" con color "<<it->to->color<<std::endl;
+                if(it->to->color==colorear || it->to->color==0){
+                    it->to->color=colorear;
+                    std::cout<<"el nodo "<<it->idto<<" tiene color "<<it->to->color<<std::endl;
+                    if (it->to->color==0){
+                        stack2.push(it->to);
+                    }
+                }else{
+                    return false;
                 }
-
-                for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
-                {
-                    auto to = iter->idto;
-                    iter->to->color = 2;
-                    q1.push(to);
+            }
+            if (stack1.empty()){
+                auto temp=stack1;
+                stack1=stack2;
+                stack2=temp;
+                if(colorear==1){
+                    colorear=2;
+                }else{
+                    colorear=1;
                 }
-
-
             }
 
+
+
+
         }
+
         return true;
     }
 

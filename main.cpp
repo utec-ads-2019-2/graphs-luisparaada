@@ -43,13 +43,21 @@ int main()
     dg.insert_Node(0,0,1);
     dg.insert_Node(0,0,2);
     dg.insert_Node(0,0,3);
-
-    dg.insert_Edge(2,1,2);
-    dg.insert_Edge(3,1,3);
+    dg.insert_Node(0,0,4);
+    dg.insert_Edge(3,1,2);
+    dg.insert_Edge(4,1,2);
+    dg.insert_Edge(2,4,2);
     dg.insert_Edge(3,2,3);
+    dg.insert_Edge(4,2,3);
 
+    //dg.insert_Edge(3,1,3);
+    //dg.insert_Edge(3,2,3);
 
-    std::cout << dg.isBipartite();
+    if (dg.isBipartite()){
+        cout<<"YEY"<<endl;
+    }else{
+        cout<<"NOPE"<<endl;
+    }
 
 
 
