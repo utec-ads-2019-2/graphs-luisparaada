@@ -8,6 +8,7 @@
 #include "typedef.h"
 
 // Data structure to store Adjacency list nodes
+struct subset;
 struct Edge;
 struct Node;
 

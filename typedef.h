@@ -7,6 +7,6 @@
 
 typedef int tipoEntero; //Edges
 typedef double tipoDouble; //Peso
-typedef unsigned int tipoID; //ID
+typedef unsigned  int tipoID; //ID
 
 #endif //GRAPHS_LUISPARAADA_TYPEDEF_H
