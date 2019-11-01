@@ -13,7 +13,7 @@ void printCondition(bool is, const std::string& type);
 
 int main()
 {
-    CJSON airport("JSON/airports.json", mode);
+    /*CJSON airport("JSON/airports.json", mode);
 
     //airport.print();
 
@@ -44,7 +44,7 @@ int main()
 
     //g2.printAdjecentList();
     //printEdgesFromVector(g2.kruskal());
-
+*/
 
     UndirectedGraph dg;
     dg.insert_Node(0,0,1);
@@ -81,10 +81,9 @@ int main()
 
     //printEdgesFromVector(dg.kruskal());
 
-
+    dg.get_prim2(1).printAdjecentList();
+    std::cout<<"PRIM"<<std::endl;
     dg.printAdjecentList();
-
-
 
 
     /*dg.insert_Edge(4,1,2);

@@ -30,7 +30,8 @@ struct Edge {
 
     Edge(Node *from, Node *to, tipoDouble weight, tipoEntero idfrom, tipoEntero idto) : from(from), to(to),
                                                                                         weight(weight), idfrom(idfrom),
-                                                                                        idto(idto) {}
+                                                                                        idto(idto) {};
+    Edge(tipoDouble weight2):weight(weight2){};
 };
 
 struct SimpleEdge{
