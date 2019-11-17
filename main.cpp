@@ -79,11 +79,24 @@ int main()
     dg.insert_Edge(7,5,2);
     dg.insert_Edge(8,1,5);
 
-    //printEdgesFromVector(dg.kruskal());
+    auto temporal=dg.DFS(4);
+    for (auto it:temporal){
+        cout<<"("<<it.idfrom<<" "<<it.idto<<", "<<it.weight<<") "<<endl;
+    }
 
+    /*auto temporal=dg.BFS(4);
+    for (auto it:temporal){
+        cout<<"("<<it.idfrom<<" "<<it.idto<<", "<<it.weight<<") "<<endl;
+    }
+    */cout<<"NOW ADJACENCY LIST"<<endl;
+
+
+
+    //printEdgesFromVector(dg.kruskal());
+    dg.printAdjecentList();
     dg.get_prim2(1).printAdjecentList();
     std::cout<<"PRIM"<<std::endl;
-    dg.printAdjecentList();
+
 
 
     /*dg.insert_Edge(4,1,2);

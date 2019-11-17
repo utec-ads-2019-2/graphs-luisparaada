@@ -12,7 +12,7 @@
 #include "ENode.h"
 #include "HaversineEquation.h"
 #include "rapidjson/document.h"
-
+#include <queue>
 //JSON Compatibility
 
 class Graph
@@ -73,8 +73,8 @@ public:
         }
         return retorno;
     }
-
-    bool deapth_search(Node* nodo,std::vector<tipoEntero > &missing){
+    //used for the convex function
+        bool BFS(Node* nodo,std::vector<tipoEntero > &missing){
         std::vector<tipoEntero > checked;
         checked.push_back(nodo->id);
         int contador=0;
@@ -101,6 +101,75 @@ public:
             std::sort(checked.begin(),checked.end());
             return checked == missing;
         }
+    }
+    //used for the real deapth search
+    std::vector<Edge> BFS(int nodo){
+        std::vector<tipoEntero > checked;
+        auto missing=get_nodes();
+        std::vector<Edge> retorno;
+        checked.push_back(nodo);
+        int contador=0;
+        int limit=checked.size();
+        while (contador<limit){
+            //std::cout<<"checking"<<checked[contador]<<std::endl;
+            Node* temporal=AdjacencyList[checked[contador]];
+            for (auto it2=temporal->vector_de_edges.begin();it2!=temporal->vector_de_edges.end();it2++){
+                auto temporal2=std::find(checked.begin(),checked.end(),it2->idto);
+                //std::cout<<"edge: "<<it2->idfrom<<" to "<<it2->idto<<std::endl;
+                if (temporal2!=checked.end()){
+                    continue;
+                }else{
+                    //std::cout<<"added "<<it2->idto<<std::endl;
+                    checked.push_back(it2->idto);
+                    retorno.emplace_back(Edge(it2->from,it2->to,it2->weight,it2->idfrom,it2->idto));
+                }
+            }
+            limit=checked.size();
+            contador++;
+        }
+        if(checked.size()!= missing.size()){
+            std::vector<Edge> nulo;
+            return nulo;
+        }else{
+            std::sort(checked.begin(),checked.end());
+            return retorno;
+        }
+    }
+
+    void deepen(int nodo,std::vector<Edge>& retorno, std::map<int,bool>& marcados){
+        marcados[nodo]=true;
+        for (auto it:AdjacencyList[nodo]->vector_de_edges){
+            if (!marcados[it.idto]){
+                retorno.emplace_back(Edge(AdjacencyList[nodo],AdjacencyList[it.idto],it.weight,it.idfrom,it.idto));
+                deepen(it.idto,retorno,marcados);
+            }
+        }
+
+
+    }
+
+    std::vector<Edge> DFS(int node){
+        std::vector<int> missing=get_nodes();
+        std::vector<Edge> retorno;
+        std::map<int,bool> marcados;
+        for (auto it:missing ){
+            marcados[it]=false;
+        }
+        deepen(node,retorno,marcados);
+        std::cout<<"HOLA"<<std::endl;
+        if (retorno.size()!=missing.size()-1){
+            std::cout<<missing.size()<<std::endl;
+            std::cout<<retorno.size()<<std::endl;
+            for (auto it:retorno){
+                std::cout<<"("<<it.idfrom<<" "<<it.idto<<", "<<it.weight<<") "<<std::endl;
+            }
+            retorno.clear();
+            std::cout<<"BFS did not work"<<std::endl;
+            return retorno;
+        }else{
+            return retorno;
+        }
+
     }
 
     bool is_bidirectional(){
@@ -178,7 +247,7 @@ public:
         auto vector=get_nodes();
         for (auto it:AdjacencyList){
             //std::cout<<"hola"<<std::endl;
-            if(!deapth_search(it.second,vector)){
+            if(!BFS(it.second,vector)){
                 return false;
             }
         }
