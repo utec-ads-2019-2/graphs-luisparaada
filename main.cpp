@@ -46,7 +46,7 @@ int main()
     //printEdgesFromVector(g2.kruskal());
 */
 
-    UndirectedGraph dg;
+    DirectedGraph dg;
     dg.insert_Node(0,0,1);
     dg.insert_Node(0,0,2);
     dg.insert_Node(0,0,3);
@@ -83,7 +83,8 @@ int main()
     for (auto it:temporal){
         cout<<"("<<it.idfrom<<" "<<it.idto<<", "<<it.weight<<") "<<endl;
     }
-
+    cout<<"NOW DIJKSTRA "<<endl;
+    dg.Dijkstra(7);
     /*auto temporal=dg.BFS(4);
     for (auto it:temporal){
         cout<<"("<<it.idfrom<<" "<<it.idto<<", "<<it.weight<<") "<<endl;
@@ -91,10 +92,9 @@ int main()
     */cout<<"NOW ADJACENCY LIST"<<endl;
 
 
-
     //printEdgesFromVector(dg.kruskal());
     dg.printAdjecentList();
-    dg.get_prim2(1).printAdjecentList();
+    //dg.get_prim2(1).printAdjecentList();
     std::cout<<"PRIM"<<std::endl;
 
 
@@ -105,7 +105,7 @@ int main()
     dg.insert_Edge(4,2,3);
 */
     //dg.insert_Edge(3,4,2);
-
+/*
     UndirectedGraph ga;
     ga.insert_Node(0,0,1);
     ga.insert_Node(0,0,2);
@@ -119,7 +119,7 @@ int main()
     //dg.insert_Edge(3,2,3);
 
     printCondition(dg.isBipartite(), "Bipartido");
-
+*/
     return 0;
 }
 

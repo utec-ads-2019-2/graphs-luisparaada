@@ -49,5 +49,27 @@ struct subset
     tipoDouble rank;
 };
 
+struct nodo_dijkstra{
+    int idfrom;
+    std::map<int,int> valores;
+
+    nodo_dijkstra(int idfrom1,std::vector<int> allnodes):idfrom(idfrom1){
+        for (auto it:allnodes){
+            valores[it]=1000000;
+        }
+
+    }
+
+
+};
+
+struct nodo_prioridad{
+    int idfrom;
+    int idto;
+    int costo;
+    nodo_prioridad(int idfrom, int idto,int costo):idfrom(idfrom),idto(idto),costo(costo){};
+
+};
+
 
 #endif //GRAPHS_LUISPARAADA_ENODE_H

@@ -14,7 +14,11 @@
 #include "rapidjson/document.h"
 #include <queue>
 //JSON Compatibility
-
+bool check_nodos_prioridad(int node,std::vector< int> prioridades);
+int get_last_value_of_id(int node, std::vector<nodo_dijkstra>& prioridades);
+int get_index_with_node(int node,std::vector<int> vector2);
+void delete_every_repeated(std::vector<int>usados,std::vector<nodo_prioridad>& priorityqeue);
+using namespace std;
 class Graph
 {
 protected:
@@ -64,6 +68,16 @@ public:
 
     unsigned long getNumberEdges() const {
         return numberEdges;
+    }
+    int get_weight(int idfrom,int idto ){
+        auto temp=AdjacencyList[idfrom]->vector_de_edges;
+        for (auto it:temp){
+            if (it.idto==idto){
+                int temporal=it.weight;
+                return temporal;
+            }
+        }
+        return -1;
     }
 
     std::vector<int> get_nodes(){
@@ -171,6 +185,79 @@ public:
         }
 
     }
+
+
+    std::vector<Edge> Dijkstra(int node) {
+        auto vector2=get_nodes();
+        int** matriz;
+        vector<int> orden;
+        vector<int> usados;
+        vector<nodo_prioridad> priority_qeue;
+        matriz=new int*[vector2.size()];
+        for (int i=0;i<vector2.size();i++){
+            matriz[i]=new int[vector2.size()];
+            for (int j=0;j<vector2.size();j++){
+                matriz[i][j]=-1;
+            }
+        }
+        usados.push_back(node);
+        for (int i=0;i<vector2.size();i++){
+            matriz[0][i]=get_weight(usados[0],vector2[i]);
+            if (get_weight(usados[0],vector2[i])!=-1){
+                priority_qeue.emplace_back(nodo_prioridad(node,vector2[i],get_weight(usados[0],vector2[i])));
+            }
+        }
+
+        int contador=0;
+        while (!priority_qeue.empty() ){
+            int contador2=0;
+            nodo_prioridad a=priority_qeue[0];
+            for (int i=0;i<priority_qeue.size();i++ ){
+                if (priority_qeue[i].costo<a.costo && check_nodos_prioridad(priority_qeue[i].idto,usados)){
+                    a=priority_qeue[i];
+                    contador2=i;
+                }
+            }
+            cout<<"CHECKING"<<endl;
+            cout<<a.idfrom<<" "<<a.idto<<" "<<a.costo<<endl;
+            usados.push_back(a.idto);
+            for (auto it:usados){
+                cout<<it<<" "<<endl;
+            }
+            for (int i=0;i<vector2.size();i++){
+                if (matriz[contador][i]==-1 && get_weight(a.idto,vector2[i])){
+                    matriz[contador+1][i]=get_weight(a.idto,vector2[i]);
+                }else{
+                    if (matriz[contador][i]!=-1 && get_weight(a.idto,vector2[i])+matriz[contador][get_index_with_node(a.idto,vector2)]<matriz[contador][i]  &&get_weight(a.idto,vector2[i])!=-1){
+                        matriz[contador+1][i]=get_weight(a.idto,vector2[i])+matriz[contador][get_index_with_node(a.idto,vector2)]<matriz[contador][i];
+                        cout<<"LLEGO ACA con i="<<i<<endl;
+                    }else{
+                        matriz[contador+1][i]=matriz[contador][i];
+
+                    }
+                }
+            }
+            for(auto it:AdjacencyList[a.idto]->vector_de_edges){
+                if (!check_nodos_prioridad(it.idto,usados)){
+                    priority_qeue.emplace_back(nodo_prioridad(it.idfrom,it.idto,it.weight));
+                }
+            }
+            delete_every_repeated(usados,priority_qeue);
+            contador++;
+
+        }
+
+
+
+
+        for (int i=0;i<vector2.size();i++){
+            for (int j=0;j<vector2.size();j++){
+                cout<<matriz[i][j]<<" ";
+            }
+            cout<<endl;
+        }
+    }
+
 
     bool is_bidirectional(){
         for (auto it:AdjacencyList){
@@ -557,5 +644,46 @@ public:
 
 };
 
+bool check_nodos_prioridad(int node,std::vector< int> usados){
+    for (auto it:usados){
+        if (it==node){
+            return true;
+        }
+    }
+    return false;
+}
 
+int get_last_value_of_id(int node, std::vector<nodo_dijkstra>& prioridades){
+    for (auto it:prioridades[prioridades.size()-2].valores){
+        if (it.first==node){
+            return it.second;
+        }
+    }
+}
+
+int get_index_with_node(int node,std::vector<int> vector2){
+    for (int i=0;i<vector2.size();i++){
+        if (vector2[i]==node){
+            return i;
+        }
+    }
+}
+
+void delete_every_repeated(std::vector<int>usados,std::vector<nodo_prioridad>& priorityqeue){
+    std::vector<nodo_prioridad> temporal;
+    for (int i=0;i<priorityqeue.size();i++){
+        if (!check_nodos_prioridad(priorityqeue[i].idto,usados)){
+            temporal.emplace_back(nodo_prioridad(priorityqeue[i].idfrom,priorityqeue[i].idto,priorityqeue[i].costo));
+            cout<<priorityqeue[i].idfrom<<" "<<priorityqeue[i].idto<<" "<<priorityqeue[i].costo<<"WA HELLO THERE"<<endl;
+            for (auto it:usados){
+                cout<<it<<" ";
+
+            }
+        }
+    }
+    priorityqeue.clear();
+    for (int i=0;i<temporal.size();i++){
+        priorityqeue.emplace_back(temporal[i].idfrom,temporal[i].idto,temporal[i].costo);
+    }
+}
 #endif //GRAPHS_LUISPARAADA_CGRAPH_H
