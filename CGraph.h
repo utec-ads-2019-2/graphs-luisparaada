@@ -246,16 +246,81 @@ public:
             contador++;
 
         }
-
-
-
-
         for (int i=0;i<vector2.size();i++){
             for (int j=0;j<vector2.size();j++){
                 cout<<matriz[i][j]<<" ";
             }
             cout<<endl;
         }
+    }
+
+
+    pair <std::vector<std::vector<tipoDouble>>*,std::vector<std::vector<tipoDouble>>*>* FloydWarshall(){
+
+        auto AdjencyMatrix = new std::vector<std::vector<tipoDouble>>(numberNodes, std::vector<tipoDouble>(numberNodes, 0.0));
+
+        for (auto  it : AdjacencyList)
+            for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
+                (*AdjencyMatrix)[(iter->idto) - 1][(it.first) - 1] = iter->weight;
+
+
+        auto distanceMatrix = new std::vector<std::vector<tipoDouble>>(numberNodes, std::vector<tipoDouble>(numberNodes, 0.0));
+        auto secuenceMatrix = new std::vector<std::vector<tipoDouble>>(numberNodes, std::vector<tipoDouble>(numberNodes, 0.0));
+
+        for (int l = 0; l < numberNodes; ++l)
+            for (int i = 0; i < numberNodes; ++i)
+                (*distanceMatrix)[l][i] = (*AdjencyMatrix)[l][i];
+
+
+        for (int k = 0; k < numberNodes; ++k)
+            for (int i = 0; i < numberNodes; ++i)
+                if((*distanceMatrix)[k][i] == 0 and k != i)
+                    (*distanceMatrix)[k][i] = MAXFLOAT;
+                else if(k == i) //DIAGONAL = 0 POR PROPIEDAD
+                    (*distanceMatrix)[k][i] = 0.0;
+
+        for (int n = 0; n < numberNodes; ++n)
+            for (int i = 0; i < numberNodes; ++i)
+                if(n == i) //DIAGONAL = 0 POR PROPIEDAD
+                    (*secuenceMatrix)[n][i] = 0.0;
+                else
+                    (*secuenceMatrix)[n][i] = i + 1;
+
+
+        for (int k = 0; k < numberNodes; ++k)
+            for (int i = 0; i < numberNodes; ++i)
+                for (int j = 0; j < numberNodes; ++j)
+                    if((*distanceMatrix)[i][k] + (*distanceMatrix)[k][j] < (*distanceMatrix)[i][j]){
+                        (*distanceMatrix)[i][j] = (*distanceMatrix)[i][k] + (*distanceMatrix)[k][j];
+                        (*secuenceMatrix)[i][j] = k + 1;
+                    }
+
+
+        cout <<"Matriz de Distancias de los Caminos más Cortos" << endl;
+
+
+        for (int m = 0; m < numberNodes; ++m) {
+            for (int i = 0; i < numberNodes; ++i) {
+                cout << (*distanceMatrix)[m][i] << " ";
+            }
+            cout << endl;
+        }
+
+        cout <<"Matriz de Secuencia" << endl;
+
+        for (int m = 0; m < numberNodes; ++m) {
+            for (int i = 0; i < numberNodes; ++i) {
+                cout << (*secuenceMatrix)[m][i] << " ";
+            }
+            cout << endl;
+        }
+
+        auto result = new pair<std::vector<std::vector<tipoDouble>>*,std::vector<std::vector<tipoDouble>>*>;
+        result->first = distanceMatrix;
+        result->second = secuenceMatrix;
+
+
+        return result;
     }
 
 

@@ -13,38 +13,38 @@ void printCondition(bool is, const std::string& type);
 
 int main()
 {
-    /*CJSON airport("JSON/airports.json", mode);
-
-    //airport.print();
-
-    DirectedGraph graph(airport.getDocument());
-    graph.printAdjecentList();
-    std::cout << "nodos: "<< graph.getNumberNodes() << std::endl;
-    std::cout  << "edges: "<< graph.getNumberEdges() << std::endl;
-    std::cout  << "density: "<< graph.getDensity() << std::endl;
-
-    printCondition(graph.is_convex(), "Convexo");
-    printCondition(graph.isBipartite(), "Bipartito");
-
-
-    UndirectedGraph g2;
-    g2.insert_Node(0,0,0);
-    g2.insert_Node(0,0,1);
-    g2.insert_Node(0,0,2);
-    g2.insert_Node(0,0,3);
-
-    g2.insert_Edge(0,1,10);
-    g2.insert_Edge(1,3,15);
-    g2.insert_Edge(3,2,4);
-    g2.insert_Edge(2,0,6);
-    g2.insert_Edge(0,3,5);
+//    CJSON airport("../JSON/airports.json", mode);
+//
+//    //airport.print();
+//
+//    DirectedGraph graph(airport.getDocument());
+//    graph.printAdjecentList();
+//    std::cout << "nodos: "<< graph.getNumberNodes() << std::endl;
+//    std::cout  << "edges: "<< graph.getNumberEdges() << std::endl;
+//    std::cout  << "density: "<< graph.getDensity() << std::endl;
+//
+//    printCondition(graph.is_convex(), "Convexo");
+//    printCondition(graph.isBipartite(), "Bipartito");
+//
+//
+//    UndirectedGraph g2;
+//    g2.insert_Node(0,0,0);
+//    g2.insert_Node(0,0,1);
+//    g2.insert_Node(0,0,2);
+//    g2.insert_Node(0,0,3);
+//
+//    g2.insert_Edge(0,1,10);
+//    g2.insert_Edge(1,3,15);
+//    g2.insert_Edge(3,2,4);
+//    g2.insert_Edge(2,0,6);
+//    g2.insert_Edge(0,3,5);
 
     //printCondition(graph.is_convex(), "Convexo");
 
 
     //g2.printAdjecentList();
     //printEdgesFromVector(g2.kruskal());
-*/
+
 
     DirectedGraph dg;
     dg.insert_Node(0,0,1);
@@ -79,23 +79,33 @@ int main()
     dg.insert_Edge(7,5,2);
     dg.insert_Edge(8,1,5);
 
-    auto temporal=dg.DFS(4);
-    for (auto it:temporal){
-        cout<<"("<<it.idfrom<<" "<<it.idto<<", "<<it.weight<<") "<<endl;
-    }
-    cout<<"NOW DIJKSTRA "<<endl;
-    dg.Dijkstra(7);
+//    dg.insert_Edge(1,2,8);
+//    dg.insert_Edge(1,4,1);
+//    dg.insert_Edge(2,3,1);
+//    dg.insert_Edge(3,1,4);
+//    dg.insert_Edge(4,2,2);
+//    dg.insert_Edge(4,3,9);
+
+    dg.FloydWarshall();
+
+//    auto temporal=dg.DFS(4);
+//    for (auto it:temporal){
+//        cout<<"("<<it.idfrom<<" "<<it.idto<<", "<<it.weight<<") "<<endl;
+//    }
+//    cout<<"NOW DIJKSTRA "<<endl;
+//    dg.Dijkstra(7);
     /*auto temporal=dg.BFS(4);
     for (auto it:temporal){
         cout<<"("<<it.idfrom<<" "<<it.idto<<", "<<it.weight<<") "<<endl;
     }
-    */cout<<"NOW ADJACENCY LIST"<<endl;
+    */
+//    cout<<"NOW ADJACENCY LIST"<<endl;
 
 
     //printEdgesFromVector(dg.kruskal());
-    dg.printAdjecentList();
+//    dg.printAdjecentList();
     //dg.get_prim2(1).printAdjecentList();
-    std::cout<<"PRIM"<<std::endl;
+//    std::cout<<"PRIM"<<std::endl;
 
 
 
