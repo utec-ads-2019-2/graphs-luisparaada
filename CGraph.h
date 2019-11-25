@@ -323,6 +323,31 @@ public:
         return result;
     }
 
+    void BellmanFord(int node){
+        map<tipoEntero,tipoDouble> distanceOfNodes;
+
+        for (auto  &it : AdjacencyList){
+            distanceOfNodes[it.first] = MAXFLOAT;
+        }
+
+        distanceOfNodes[node]=0;
+
+        for (int j = 0; j < numberNodes - 1 ; ++j)
+            for (auto  it : AdjacencyList)
+                for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
+                    if (distanceOfNodes[iter->idto] != MAXFLOAT && distanceOfNodes[iter->idto] + iter->weight < distanceOfNodes[it.first])
+                        distanceOfNodes[it.first] = distanceOfNodes[iter->idto] + iter->weight;
+
+        for (auto  it : AdjacencyList)
+            for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
+                if (distanceOfNodes[iter->idto] != MAXFLOAT && distanceOfNodes[iter->idto] + iter->weight < distanceOfNodes[it.first])
+                    throw std::invalid_argument("El grafo contiene ciclos negativos");
+
+        cout << "Node   To"<< endl;
+        for (auto  &it : distanceOfNodes){
+            cout << it.first << " -> " << it.second << endl;
+        }
+    }
 
     bool is_bidirectional(){
         for (auto it:AdjacencyList){
