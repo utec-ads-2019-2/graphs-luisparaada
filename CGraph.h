@@ -191,6 +191,7 @@ public:
         auto vector2=get_nodes();
         int** matriz;
         vector<int> orden;
+        orden.resize(vector2.size(),node);
         vector<int> usados;
         vector<nodo_prioridad> priority_qeue;
         matriz=new int*[vector2.size()];
@@ -227,10 +228,12 @@ public:
             for (int i=0;i<vector2.size();i++){
                 if (matriz[contador][i]==-1 && get_weight(a.idto,vector2[i])){
                     matriz[contador+1][i]=get_weight(a.idto,vector2[i]);
+                    orden[i]=usados[contador+1];
                 }else{
                     if (matriz[contador][i]!=-1 && get_weight(a.idto,vector2[i])+matriz[contador][get_index_with_node(a.idto,vector2)]<matriz[contador][i]  &&get_weight(a.idto,vector2[i])!=-1){
                         matriz[contador+1][i]=get_weight(a.idto,vector2[i])+matriz[contador][get_index_with_node(a.idto,vector2)]<matriz[contador][i];
                         cout<<"LLEGO ACA con i="<<i<<endl;
+                        orden[i]=usados[contador+1];
                     }else{
                         matriz[contador+1][i]=matriz[contador][i];
 
@@ -246,6 +249,7 @@ public:
             contador++;
 
         }
+        cout<<"HELLO "<<endl;
         for (int i=0;i<vector2.size();i++){
             for (int j=0;j<vector2.size();j++){
                 cout<<matriz[i][j]<<" ";
