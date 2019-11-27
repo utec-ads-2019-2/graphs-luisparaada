@@ -252,6 +252,26 @@ public:
             }
             cout<<endl;
         }
+        cout<<"NOW PARENTS"<<endl;
+        for (auto it:orden){
+            cout<<it<<" ";
+        }cout<<endl;
+        cout<<"now retorno"<<endl;
+        std::vector<Edge> retorno;
+        if (is_bidirectional()){
+            for (int i=1;i<orden.size();i++){
+                retorno.emplace_back(Edge(AdjacencyList[vector2[i]],AdjacencyList[orden[i]],get_weight( vector2[i],orden[i]),vector2[i],orden[i]));
+                retorno.emplace_back(Edge(AdjacencyList[orden[i]],AdjacencyList[vector2[i]],get_weight( vector2[i],orden[i]),orden[i],vector2[i]));
+            }
+        }else{
+            for (int i=1;i<orden.size();i++){
+                retorno.emplace_back(Edge(AdjacencyList[orden[i]],AdjacencyList[vector2[i]],get_weight( orden[i],vector2[i]),orden[i],vector2[i]));
+            }
+        }
+        for (auto it:retorno){
+            cout<<"( "<<it.idfrom<<", "<<it.idto<<", "<<it.weight<<")"<<endl;
+        }
+        return retorno;
     }
 
 
@@ -397,11 +417,8 @@ public:
 
     }
 
-    int AStar(int starNode, int endNode){
-
-        
-
-        return 0;
+    tipoDouble calcularEuristica(Node a, Node b){
+        return sqrt(pow(a.x-b.x,2)+pow(a.y-b.y,2));
     }
 
 

@@ -46,7 +46,7 @@ int main()
     //printEdgesFromVector(g2.kruskal());
 
 
-    DirectedGraph dg;
+    UndirectedGraph dg;
     dg.insert_Node(0,0,1);
     dg.insert_Node(0,0,2);
     dg.insert_Node(0,0,3);
@@ -97,6 +97,7 @@ int main()
 //    dg.insert_Edge(4,2,1);
 
 
+    dg.FloydWarshall();
 
 
 //    auto bf = dg.BellmanFord(1,5);
@@ -106,6 +107,8 @@ int main()
 //        cout << "From -> " << elemento.idfrom << " To -> " << elemento.idto<< " Weight -> " << elemento.weight << endl;
 //    }
 
+
+    dg.Dijkstra(1);
 
 
 
