@@ -255,7 +255,7 @@ public:
     }
 
 
-    pair <std::vector<std::vector<tipoDouble>>*,std::vector<std::vector<tipoDouble>>*>* FloydWarshall(){
+    std::pair <std::vector<std::vector<tipoDouble>>*,std::vector<std::vector<tipoDouble>>*>* FloydWarshall(){
 
         auto AdjencyMatrix = new std::vector<std::vector<tipoDouble>>(numberNodes, std::vector<tipoDouble>(numberNodes, 0.0));
 
@@ -323,31 +323,88 @@ public:
         return result;
     }
 
-    void BellmanFord(int node){
-        map<tipoEntero,tipoDouble> distanceOfNodes;
+    vector<SimpleEdge> BellmanFord(int startNode, int endNode){
+        //map<tipoEntero,tipoDouble> distanceOfNodes;
+
+        map<tipoEntero,pair<tipoDouble,pair<tipoDouble,tipoDouble>>> distanceOfNodesWithPrev;
+
 
         for (auto  &it : AdjacencyList){
-            distanceOfNodes[it.first] = MAXFLOAT;
+            distanceOfNodesWithPrev[it.first].first = MAXFLOAT;
         }
 
-        distanceOfNodes[node]=0;
+        //distanceOfNodes[startNode] = 0;
+        distanceOfNodesWithPrev[startNode] = make_pair(0, make_pair(startNode,0));
 
         for (int j = 0; j < numberNodes - 1 ; ++j)
             for (auto  it : AdjacencyList)
                 for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
-                    if (distanceOfNodes[iter->idto] != MAXFLOAT && distanceOfNodes[iter->idto] + iter->weight < distanceOfNodes[it.first])
-                        distanceOfNodes[it.first] = distanceOfNodes[iter->idto] + iter->weight;
+                    if (distanceOfNodesWithPrev[iter->idto].first != MAXFLOAT && distanceOfNodesWithPrev[iter->idto].first + iter->weight < distanceOfNodesWithPrev[it.first].first){
+                        distanceOfNodesWithPrev[it.first].first = distanceOfNodesWithPrev[iter->idto].first + iter->weight;
+                        distanceOfNodesWithPrev[it.first].second.first = iter->idto;
+                        distanceOfNodesWithPrev[it.first].second.second = iter->weight;
+                    }
+
 
         for (auto  it : AdjacencyList)
             for (auto iter=(it.second)->vector_de_edges.begin();iter!=it.second->vector_de_edges.end();iter++)
-                if (distanceOfNodes[iter->idto] != MAXFLOAT && distanceOfNodes[iter->idto] + iter->weight < distanceOfNodes[it.first])
+                if (distanceOfNodesWithPrev[iter->idto].first != MAXFLOAT && distanceOfNodesWithPrev[iter->idto].first + iter->weight < distanceOfNodesWithPrev[it.first].first)
                     throw std::invalid_argument("El grafo contiene ciclos negativos");
 
-        cout << "Node   To"<< endl;
-        for (auto  &it : distanceOfNodes){
-            cout << it.first << " -> " << it.second << endl;
+
+
+        for(auto &elemento : distanceOfNodesWithPrev){
+            cout << "The distance from node " << startNode << " to node " << elemento.first << " is: " << distanceOfNodesWithPrev[elemento.first].first << endl;
+            int currnode = elemento.first;
+            cout << "The path is: " << currnode;
+            while(currnode != startNode)
+            {
+                currnode = distanceOfNodesWithPrev[currnode].second.first;
+                cout << " <- " << currnode;
+            }
+            cout << endl << endl;
         }
+
+//        for (int i = 1; i <= distanceOfNodesWithPrev.size(); ++i) {
+//            cout << "The distance from node " << startNode << " to node " << i << " is: " << distanceOfNodesWithPrev[i].first << endl;
+//            int currnode = i;
+//            cout << "The path is: " << currnode;
+//            while(currnode != startNode)
+//            {
+//                currnode = distanceOfNodesWithPrev[currnode].second.first;
+//                cout << " <- " << currnode;
+//            }
+//            cout << endl << endl;
+//        }
+
+
+        vector <tipoDouble> nodesShortPathTrail;
+        vector<SimpleEdge> result;
+
+        cout << "The distance from node " << startNode << " to node " << endNode << " is: " << distanceOfNodesWithPrev[endNode].first << endl;
+
+        int prevnode = endNode;
+        int currnode = prevnode;
+
+        while(currnode != startNode)
+        {
+            currnode = distanceOfNodesWithPrev[currnode].second.first;
+            result.emplace(result.begin(),distanceOfNodesWithPrev[prevnode].second.second,currnode,prevnode);
+            prevnode = currnode;
+        }
+
+        return result;
+
     }
+
+    int AStar(int starNode, int endNode){
+
+        
+
+        return 0;
+    }
+
+
 
     bool is_bidirectional(){
         for (auto it:AdjacencyList){
